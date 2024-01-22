@@ -1,0 +1,328 @@
+# Please read the previous two code files to read in relevant data
+#-------------------------------------------------------------------------------------------------
+
+#Merging all datasets together 
+
+mcs_final_with_TUD <- merge(x = mcs_final, y = TUD_final_wide_final,
+                   by.x = 'MCSID', 'FCNUM00', 
+                   by.y = 'MCSID', 'FCNUM00', all.x = TRUE, all.y=TRUE)
+
+#-------------------------------------------------------------------------------------------------
+
+#Choosing only relevant variables for ease of analysis 
+
+final <- mcs_final_with_TUD[c("MCSID", "FCNUM00.x", "FCCSEX00.x", "sex", "FCCDBM00.x", "FCCDBY00.x", "FCHTCM00", "FCWTCM00", "FCBFPC00", "FCPHEX00", "FCSOME00", "FCSAFD00", "FCFRTH00", "FCSLWK00", "FCWUWK00", "FCSLWE00", "FCWUWE00", "FCSLLN00", "FCSLTR00", "FCWEGT00", "FCEXWT00", "FCETLS00", "FCLSWT00", "FCMDSA00", "FCMDSB00", "FCMDSC00", "FCMDSD00", "FCMDSE00", "FCMDSF00", "FCMDSG00", "FCMDSH00", "FCMDSI00", "FCMDSJ00", "FCMDSK00", "FCMDSL00", "FCMDSM00", "FDCE0600", "ethnicity", "FCOBESU6", "FCBMIN6", "FCUK90O6", "BMI", "GCPHDE00_7", "GCPHHO00_7", "GCPHRF00_7", "GCPHEE00_7", "GCPHWO00_7", "GCPHNE00_7", "GCSOME00_7", "GCSOCM00_7", "GCSOCH00_7", "GCWEGT00_7", "GCEXWT00_7", "GCETLS00_7", "GCLSWT00_7", "GCHTCM00_7", "GCWTCM00_7", "GCBFPC00_7", "GCBMIN7_7", "GCUK90O7_7", "GDCKESSL_7", "FPGENA00", "FPPSEX00", "FPCREL00", "FPPJOB00", "FPFMAL00", "FPNTCO00", "FPMAFI00", "FPSTSN00", "FOECDSC0", "income", "FOECDUK0", "FDTOTP00", "FDHLAN00", "FCNUM00.y", "weekday", "weekendday", "month", "type", "sleep_h_week", "sleep_h_weekend", "daytime_nap_week", "daytime_nap_weekend", "night_awakening_week", "night_awakening_weekend", "GCSQLT00_7", "SENTRY", "SPTN00", "COUNTRY", "PTTYPE2", "WEIGHT2", "AOVWT2", "BOVWT2", "BOVWTGB", "COVWT2", "DOVWT2", "EOVWT2", "FOVWT2", "GOVWT2", "NH2", "wave_participation", "weight7_participation7", "in_wave_but_missing_7", "in_wave_but_missing_6", "across_wave_missingness", "height", "weight", "height_11", "weight_11", "missingness_height_weight")]
+
+#-------------------------------------------------------------------------------------------------
+
+#Recoding variables for analysis 
+
+#Sweep 6 Variables
+
+#-------------------------------------------------------------------------------------------------
+
+#Sleep variables 
+
+#Wake-up and bed times week (assigning times to values to calculate length of sleep duration)
+
+final$bedtime_week <- ifelse(final$FCSLWK00 == 1, 20.5,
+                           ifelse(final$FCSLWK00 == 2, 21.5,
+                                  ifelse(final$FCSLWK00 == 3, 22.5,
+                                         ifelse(final$FCSLWK00 == 4, 23.5,
+                                                ifelse(final$FCSLWK00 == 5, 24.5, NA)))))
+
+
+final$wake_week <- ifelse(final$FCWUWK00 == 1, 5.5,
+                             ifelse(final$FCWUWK00 == 2, 6.5,
+                                    ifelse(final$FCWUWK00 == 3, 7.5,
+                                           ifelse(final$FCWUWK00 == 4, 8.5,
+                                                  ifelse(final$FCWUWK00 == 5, 9.5, NA)))))
+
+median(final$wake_week, na.rm=TRUE) #Md=7.5
+
+median(final$bedtime_week, na.rm=TRUE) #Md=22.5
+
+final$wake_up_week <- case_when(final$wake_week < 7.5 ~ 1,
+                                         final$wake_week >= 7.5 ~ 2)
+
+final$bed_time_week <- case_when(final$bedtime_week <= 22.5 ~ 1,
+                                final$bedtime_week > 22.5 ~ 2)
+
+
+median(final$bedtime_week, na.rm=TRUE) #Md=22.5
+
+final$bed_time_week <- case_when(final$bedtime_week <= 22.5 ~ 1,
+                                final$bedtime_week >22.5 ~ 2)
+
+#-------------------------------------------------------------------------------------------------
+
+#Calculating sleep duration during the week (generating sleep categories based on recommendations)
+
+final$sleep_week <- (24-(final$bedtime_week - final$wake_week))
+
+final$sleep_categories_week <- case_when(final$sleep_week <= 8 ~ 1,
+                                            final$sleep_week > 8 & final$sleep_week <= 9 ~ 2,
+                                            final$sleep_week > 9 & final$sleep_week <= 10 ~ 3,
+                                            final$sleep_week > 10 ~ 4)
+
+#-------------------------------------------------------------------------------------------------
+
+#Creating weekend variables 
+
+final$bedtime_weekend <- ifelse(final$FCSLWE00 == 1, 20.5,
+                             ifelse(final$FCSLWE00 == 2, 21.5,
+                                    ifelse(final$FCSLWE00 == 3, 22.5,
+                                           ifelse(final$FCSLWE00 == 4, 23.5,
+                                                  ifelse(final$FCSLWE00 == 5, 24.5, NA)))))
+
+
+final$wake_weekend <- ifelse(final$FCWUWE00 == 1, 7.5,
+                          ifelse(final$FCWUWE00 == 2, 8.5,
+                                 ifelse(final$FCWUWE00 == 3, 9.5,
+                                        ifelse(final$FCWUWE00 == 4, 10.5,
+                                               ifelse(final$FCWUWE00 == 5, 11.5, 
+                                                      ifelse(final$FCWUWE00 == 6, 12.5, NA))))))
+
+median(final$wake_weekend, na.rm=TRUE) #Md=10.5
+
+median(final$bedtime_weekend, na.rm=TRUE) #Md=23.5
+
+final$wake_up_weekend <- case_when(final$wake_weekend < 10.5 ~ 1,
+                                final$wake_weekend >= 10.5 ~ 2)
+
+final$bed_time_weekend <- case_when(final$bedtime_weekend <= 23.5 ~ 1,
+                                   final$bedtime_weekend > 23.5 ~ 2)
+
+#------------------------------------------------------------------------------------------------------
+
+#Calculating sleep duration during the weekend (generating sleep categories based on recommendations)
+
+
+final$sleep_weekend <- (24-(final$bedtime_weekend - final$wake_weekend))
+
+final$sleep_categories_weekend <- case_when(final$sleep_weekend <= 8 ~ 1,
+                                         final$sleep_weekend > 8 & final$sleep_weekend <= 9 ~ 2,
+                                         final$sleep_weekend > 9 & final$sleep_weekend <= 10 ~ 3,
+                                         final$sleep_weekend > 10 ~ 4)
+
+#-----------------------------------------------------------------------------------------------------
+
+#Recoding variables that reflect sleep difficulties at age 14 (dummy coding)
+
+final$sleep_latency <- ifelse(final$FCSLLN00 >2, 2, 1) #Problems with falling asleep (sleep onset latency)
+
+final$WASO <- ifelse(final$FCSLTR00 >3, 1, 2) #Wake-After-Sleep-Onset (problems with waking up after falling asleep)
+
+#Creating a social jetlag variable
+
+final$sleep_midpoint_week <- (final$bedtime_week + (final$sleep_week/2)) 
+final$sleep_midpoint_weekend <- (final$bedtime_weekend + (final$sleep_weekend/2)) 
+
+final$social_jetlag <- (final$sleep_midpoint_weekend - final$sleep_midpoint_week)
+
+#-------------------------------------------------------------------------------------------------
+
+#Recoding the Time-Use-Data
+
+final$sleep_categories_week_TUD <- case_when(final$sleep_h_week <= 8 ~ 1,
+                                         final$sleep_h_week > 8 & final$sleep_h_week <= 9 ~ 2,
+                                         final$sleep_h_week > 9 & final$sleep_h_week <= 10 ~ 3,
+                                         final$sleep_h_week > 10 ~ 4)
+
+final$sleep_categories_weekend_TUD <- case_when(final$sleep_h_weekend <= 8 ~ 1,
+                                             final$sleep_h_weekend > 8 & final$sleep_h_weekend <= 9 ~ 2,
+                                             final$sleep_h_weekend > 9 & final$sleep_h_weekend <= 10 ~ 3,
+                                             final$sleep_h_weekend > 10 ~ 4)
+
+final$season_4 <- case_when(final$month %in% 3:5 ~ 1,
+                            final$month %in% 6:8 ~ 2,
+                            final$month %in% 9:11 ~ 3,
+                            (final$month %in% 12 | final$month %in% 1:2) ~ 4,
+                            ) #Comparing all four seasons
+
+final$season_2 <- case_when(final$season_4 %in% 1:2 ~ 1,
+                            final$season_4 %in% 3:4 ~ 2) #Comparing spring+summer with autumn+winter
+
+
+#-------------------------------------------------------------------------------------------------
+
+#DE Variables at age 14
+
+#-------------------------------------------------------------------------------------------------
+
+#These variables will not be used in the final analysis but were computed for initial analyses and demographics 
+
+library(dplyr)
+
+#Recoding perception of weight (2 = 'very overweight', 1 = everything else)
+
+final$overweight_perception <- ifelse(final$FCWEGT00 == 4, 1, 0) #whether or not participants perceived themselves to be "very overweight" 
+tab1(final$overweight_perception, sort.group = "decreasing", cum.percent = TRUE)
+
+#Adjusted overweight perception variables
+
+final$overweight_perception_2 <- ifelse(final$FCWEGT00 >2, 1, 0) #now defining overweight perception as both "slightly overweight" and "very overweight"
+final$overweight_perception_adjusted <- if_else(final$FCUK90O6<3 & final$overweight_perception_2==1, 1, 0) #adjusting it for those who fall in the non-overweight BMI category
+tab1(final$overweight_perception_adjusted, sort.group = "decreasing", cum.percent = TRUE)
+
+#Recoding variable for significant underweight
+
+final$underweight <- ifelse(final$FCUK90O6 == 1, 1, 0)
+tab1(final$underweight, sort.group = "decreasing", cum.percent = TRUE)
+
+#Recoding variable for significant overweight
+
+final$overweight <- ifelse(final$FCUK90O6 >2, 1, 0)
+tab1(final$overweight, sort.group = "decreasing", cum.percent = TRUE)
+
+#overweight in those perceiving themselves as overweight very overweight 
+
+tab <- with(final, table(overweight, overweight_perception))
+prop.table(tab, 1)*100
+
+#-------------------------------------------------------------------------------------------------------
+
+#Recoding intention to lose weight (1 = intention to lose weight, 0 = everything else)
+
+final$weight_loss_intention <- ifelse(final$FCLSWT00 == 1, 1, 0)
+tab1(final$weight_loss_intention, cum.percent = TRUE)
+
+#Renaming relevant variables for ease of interpretation
+
+final$excessive_exercise <- final$FCEXWT00
+final$excessive_exercise <- ifelse(final$FCEXWT00 == 1, 1, 0)
+tab1(final$excessive_exercise, cum.percent = TRUE)
+
+final$dietary_restriction <- final$FCETLS00
+final$dietary_restriction <- ifelse(final$dietary_restriction == 1, 1, 0)
+tab1(final$dietary_restriction, cum.percent = TRUE)
+
+final$vigorous_physical_activity <- final$FCPHEX00
+
+#-------------------------------------------------------------------------------------------------
+
+#overall sleep quality measured at age 17
+
+final$overall_sleep_quality_7 <- final$GCSQLT00_7 #overall sleep quality measured at age 17
+
+#-------------------------------------------------------------------------------------------------
+
+#DE Variables (age 17)
+
+#------------------------------------------------------------------------------------------------
+
+#Again, these variables will not be used in the final analysis but were computed for initial analyses and demographics 
+
+#Recoding perception of weight (2 = 'very overweight', 1 = everything else)
+
+final$overweight_perception_7 <- ifelse(final$GCWEGT00_7 == 4, 1, 0)
+tab1(final$overweight_perception_7, sort.group = "decreasing", cum.percent = TRUE)
+
+#Adjusted overweight perception variable
+
+final$overweight_perception_7_2 <- ifelse(final$GCWEGT00_7 >2, 1, 0)
+final$overweight_perception_adjusted_7 <- if_else(final$GCUK90O7<3 & final$overweight_perception_7_2==1, 1, 0)
+tab1(final$overweight_perception_adjusted_7, sort.group = "decreasing", cum.percent = TRUE)
+
+
+#Recoding variable for significant underweight
+
+final$underweight_7 <- ifelse(final$GCUK90O7_7 == 1, 1, 0)
+tab1(final$underweight_7, sort.group = "decreasing", cum.percent = TRUE)
+
+#Recoding variable for significant overweight
+
+final$overweight_7 <- ifelse(final$GCUK90O7_7 >2, 1, 0)
+tab1(final$overweight_7, sort.group = "decreasing", cum.percent = TRUE)
+
+#overweight in those perceiving themselves as overweight very overweight 
+
+tab2 <- with(final, table(overweight_7, overweight_perception_7))
+prop.table(tab2, 1)*100
+
+#---------------------------------------------------------------------------------------
+
+#Recoding intention to lose weight (1 = intention to lose weight, 0 = everything else)
+
+final$weight_loss_intention_7 <- ifelse(final$GCLSWT00_7 == 2, 1, 0) #at this sweep, the coding was changed (2=intention to lose weight)
+tab1(final$weight_loss_intention_7, sort.group = "decreasing", cum.percent = TRUE)
+
+#Renaming relevant variables for ease of interpretation
+
+final$excessive_exercise_7 <- final$GCEXWT00_7
+final$excessive_exercise_7 <- ifelse(final$excessive_exercise_7 == 1, 1, 0)
+tab1(final$excessive_exercise_7, sort.group = "decreasing", cum.percent = TRUE)
+
+final$dietary_restriction_7 <- final$GCETLS00_7
+final$dietary_restriction_7 <- ifelse(final$dietary_restriction_7 == 1, 1, 0)
+tab1(final$dietary_restriction_7, sort.group = "decreasing", cum.percent = TRUE)
+
+final$vigorous_physical_activity_7 <- final$GCPHEX00_7
+
+#------------------------------------------------------------------------------------------------
+
+#Calculate BMI
+
+final$BMI_14 <- final$weight / ((final$height / 100)^2)
+
+final$BMI_11 <- final$weight_11 / ((final$height_11 / 100)^2)
+
+final$age_14 <- 14
+
+final$age_11 <- 11
+
+final$age_17 <- 17
+
+final_girls <- subset(final, final$sex==2)
+
+final_girls$BMI_adj_14 <- case_when(final_girls$BMI_14 <= 15.4 ~ 1,
+                              final_girls$BMI_14 > 15.4 & final_girls$BMI_14 < 23.5 ~ 2,
+                              final_girls$BMI_14 >= 23.5 & final_girls$BMI_14 < 26.5 ~ 3,
+                              final_girls$BMI_14 >= 26.5 ~ 4)
+
+final_boys <- subset(final, final$sex==1)
+
+final_boys$BMI_adj_14 <- case_when(final_boys$BMI_14 <= 15.2 ~ 1,
+                                   final_boys$BMI_14 > 15.2 & final_boys$BMI_14 < 22.6 ~ 2,
+                                   final_boys$BMI_14 >= 22.6 & final_boys$BMI_14 < 25.2 ~ 3,
+                                   final_boys$BMI_14 >= 25.2 ~ 4)
+
+
+#-------------------------------------------------------------------------------------------------
+
+#Create file with participants who completed both DE assessments and all sleep variables
+
+final_analysis <- subset(final, (!is.na(FCLSWT00)) & (!is.na(FCEXWT00)) & (!is.na(FCETLS00)) & (!is.na (GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)) & (!is.na(GCSQLT00_7)) & (!is.na(FCSLWK00)) & (!is.na(FCWUWK00)) & (!is.na(FCSLWE00)) & (!is.na(FCWUWE00)) & (!is.na(FCSLLN00)) & (!is.na(FCSLTR00)))
+
+library(dplyr)
+final_analysis %>%
+  mutate(across(-c(MCSID, SPTN00), as.numeric))
+
+#------------------------------------------------------------------------------------------------
+
+#Re-classifying the missing ethnicity values as "other"
+
+summary(final_analysis$ethnicity) #overview of missing values (n=3)
+
+final_analysis$ethnicity <- ifelse(is.na(final_analysis$ethnicity), 6, final_analysis$ethnicity)
+
+
+#------------------------------------------------------------------------------------------------
+
+#Creating final TUD assessment dataset
+
+final_analysis_TUD <- subset(final, (!is.na(FCLSWT00)) & (!is.na(FCEXWT00)) & (!is.na(FCETLS00)) & (!is.na (GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)) & (!is.na(GCSQLT00_7)) & (!is.na(sleep_categories_week_TUD)))
+
+#------------------------------------------------------------------------------------------------
+
+#Recoding missing values on ethnicity 
+
+final_analysis_TUD$ethnicity <- ifelse(is.na(final_analysis_TUD$ethnicity), 6, final_analysis_TUD$ethnicity)
+
+
+
+
+
+
+
+
