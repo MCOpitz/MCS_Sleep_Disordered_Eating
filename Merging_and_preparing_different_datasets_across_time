@@ -1,0 +1,619 @@
+#Preparing for the data to be read in 
+
+#Specify work directory
+setwd("C:/") #Include your own directory
+
+#Path to MCS Data (age 14 sweep)
+inpath <- "C:/" #Specify your own path
+
+#Path to store results
+outpath <- "C:/" #Specify your own path
+
+library(tidyverse)
+library(haven)
+library(foreign)
+library(naniar)
+
+#-------------------------------------------------------------------------------
+#Reading in relevant sweep 4 cohort child data files for ethnicity data
+
+mcs4_cm_derived <-read_sav(file=paste0(inpath,"/mcs4_cm_derived.sav"))
+
+#Select ethnicity data reported by children at age 7
+
+mcs4_cm_derived_relevant <-
+  mcs4_cm_derived[c("MCSID", "DCNUM00", "DDC06E00")]
+
+
+mcs4_cm_derived_relevant$FCNUM00 <- mcs4_cm_derived_relevant$DCNUM00
+
+#-------------------------------------------------------------------------------
+
+#Reading in relevant sweep 4 cohort child data for sex and income
+
+mcs4_cm_interview <-read_sav(file=paste0(inpath,"/mcs4_cm_interview.sav"))
+mcs4_family_derived <-read_sav(file=paste0(inpath,"/mcs4_family_derived.sav"))
+
+#Select sex data reported by children at age 7
+
+mcs4_cm_interview_relevant <-
+  mcs4_cm_interview[c("MCSID", "DCNUM00", "DCCSEX00")]
+
+mcs4_family_derived_relevant <-
+  mcs4_family_derived[c("MCSID", "DOECDSC0")]
+
+mcs4_cm_interview_relevant$FCNUM00 <- mcs4_cm_interview_relevant$DCNUM00
+
+
+mcs4_relevant_pre <- merge(x=mcs4_cm_interview_relevant, 
+                       y=mcs4_family_derived_relevant,
+                       by.x = c("MCSID"),
+                       by.y = c("MCSID"),
+                       all.x = TRUE, all.y = 
+                         TRUE)
+
+mcs4_relevant <- merge(x=mcs4_relevant_pre, 
+                       y=mcs4_cm_derived_relevant,
+                       by.x = c("MCSID", "FCNUM00"),
+                       by.y = c("MCSID", "FCNUM00"),
+                       all.x = TRUE, all.y = 
+                         TRUE)
+
+#-------------------------------------------------------------------------------
+
+#Reading in relevant sweep 5 data for cm sex, household income, and weight and height data
+
+mcs5_hhgrid <-read_sav(file=paste0(inpath,"/mcs5_hhgrid.sav"))
+mcs5_family_derived <-read_sav(file=paste0(inpath,"/mcs5_family_derived.sav"))
+mcs5_cm_interview <-read_sav(file=paste0(inpath,"/mcs5_cm_interview.sav"))
+
+#Create dataframe that only includes cm information 
+
+mcs5_hhgrid_2 <- subset(mcs5_hhgrid, !is.na(ECNUM00))
+
+
+#choose relevant variables 
+
+mcs5_hhgrid_relevant <-
+  mcs5_hhgrid_2[c("MCSID", "ECNUM00", "ECSEX0000")]
+
+mcs5_hhgrid_relevant$FCNUM00 <- mcs5_hhgrid_relevant$ECNUM00
+
+mcs5_family_derived_relevant <-
+  mcs5_family_derived[c("MCSID", "EOECDSC0")]
+
+mcs5_cm_interview_relevant <-
+  mcs5_cm_interview[c("MCSID", "ECNUM00", "ECHTCMA0", "ECWTCMA0")]
+
+mcs5_cm_interview_relevant$FCNUM00 <- mcs5_cm_interview_relevant$ECNUM00
+
+mcs5_relevant <- merge(x=mcs5_family_derived_relevant, 
+                       y=mcs5_hhgrid_relevant,
+                       by.x = c("MCSID"),
+                       by.y = c("MCSID"),
+                       all.x = TRUE, all.y = 
+                         TRUE)
+
+#-------------------------------------------------------------------------------
+
+#Reading in relevant sweep 6 cohort child data files
+
+mcs6_cm_interview <-read_sav(file=paste0(inpath,"/mcs6_cm_interview.sav"))
+mcs6_cm_derived <-read_sav(file=paste0(inpath,"/mcs6_cm_derived.sav"))
+
+
+#Merging both datasets based on Anonymised Family/Household Identifier and Cohort Member number within a MCS family
+
+mcs6_cm_merged_first_step <- merge(x=mcs6_cm_interview, 
+                        y=mcs6_cm_derived,
+                        by.x = c("MCSID", "FCNUM00"),
+                        by.y = c("MCSID", "FCNUM00"),
+                        all.x = TRUE, all.y = 
+                          TRUE)
+
+mcs6_cm_merged_second_step <- merge(x=mcs6_cm_merged_first_step, 
+                                   y=mcs5_cm_interview_relevant,
+                                   by.x = c("MCSID", "FCNUM00"),
+                                   by.y = c("MCSID", "FCNUM00"),
+                                   all.x = TRUE, all.y = 
+                                     TRUE)
+
+mcs6_cm_merged_pre <- merge(x=mcs6_cm_merged_second_step, 
+                        y=mcs4_relevant,
+                        by.x = c("MCSID", "FCNUM00"),
+                        by.y = c("MCSID", "FCNUM00"),
+                        all.x = TRUE, all.y = 
+                          TRUE)
+
+mcs6_cm_merged <- merge(x=mcs6_cm_merged_pre, 
+                            y=mcs5_relevant,
+                            by.x = c("MCSID", "FCNUM00"),
+                            by.y = c("MCSID", "FCNUM00"),
+                            all.x = TRUE, all.y = 
+                              TRUE)
+
+#-------------------------------------------------------------------------------
+
+#Looking into ethnicity values as reported at age 7 and 14
+
+#Ethnicity at age 14 is called FDCE0600 and at age 7 is called DDC06E00
+
+table(mcs6_cm_merged$FDCE0600)
+table(mcs6_cm_merged$DDC06E00)
+
+#There are slight differences in how ethnicity values were labelled at the two time points 
+
+# Define custom labels and their corresponding numeric outcomes
+custom_labels <- c("Refusal", "Don't know", "Not applicable", "White", "Mixed", "Indian", "Pakistani and Bangladeshi", "Black or Black British", "Other (including Chinese)")
+numeric_outcomes <- c(-9, -8, -1, 1, 2, 3, 4, 5, 6)
+
+# Create factors for FDCE0600 and DDC06E00 with custom labels
+factor_FDCE0600 <- factor(mcs6_cm_merged$FDCE0600, levels = numeric_outcomes, labels = custom_labels)
+factor_DDC06E00 <- factor(mcs6_cm_merged$DDC06E00, levels = numeric_outcomes, labels = custom_labels)
+
+#Synchronize levels for factor_FDCE0600 and factor_DDC06E00
+common_levels <- union(levels(factor_FDCE0600), levels(factor_DDC06E00))
+factor_FDCE0600 <- factor(factor_FDCE0600, levels = common_levels)
+factor_DDC06E00 <- factor(factor_DDC06E00, levels = common_levels)
+
+# Find the indices where the factors differ
+differ_indices <- which(factor_FDCE0600 != factor_DDC06E00)
+
+# Extract the differing values from FDCE0600 and FDCE0601
+differences <- data.frame(FDCE0600 = mcs6_cm_merged$FDCE0600[differ_indices], 
+                          DDC06E00 = mcs6_cm_merged$DDC06E00[differ_indices])
+
+# Output the differences
+print(differences)
+
+# Create a table to show the occurrences
+occurrences_table <- table(differences)
+
+# Print the occurrences table
+print(occurrences_table)
+
+# Convert the table to a data frame
+occurrences_df <- as.data.frame(occurrences_table)
+
+# Rename the columns for better representation
+colnames(occurrences_df) <- c("Ethnicity age 14", "Ethnicity age 7", "Occurrences")
+
+# Add a new column to show the combination of changes
+occurrences_df$Changes <- paste(occurrences_df$`Ethnicity age 14`, "to", occurrences_df$`Ethnicity age 7`)
+
+# Sort the data frame by occurrences 
+occurrences_df <- occurrences_df[order(-occurrences_df$Occurrences), ]
+
+# Print the occurrences table
+print(occurrences_df)
+
+#Illustrating the values that are the same/unique at age 7 and 14
+
+# Count the occurrences of each unique value in both variables
+same_counts <- table(factor_FDCE0600, factor_FDCE0600)
+
+# Display the table
+print(same_counts)
+
+#-----------------------------------------------------------------------------------------------------------------------------
+
+#Visualisation of differences and similarities
+
+# Function to compare values and format them accordingly
+format_diff_values <- function(x, y) {
+  ifelse(x != y, paste0('<span style="color:red">', y, '</span>'), as.character(y))
+}
+
+# Apply the function to each row of the data frame
+formatted_var2 <- mapply(format_diff_values, factor_FDCE0600, factor_DDC06E00)
+
+# Create a data frame with the formatted values
+results_df <- data.frame(Variable1 = factor_FDCE0600, Variable2 = as.factor(formatted_var2), stringsAsFactors = FALSE)
+
+# Load the required libraries
+library(knitr)
+library(kableExtra)
+
+# Convert the data frame to a table using kableExtra
+kable(results_df, format = "html", escape = FALSE) %>%
+  kable_styling()
+
+#--------------------------------------------------------------------------------------------------------------------------------
+
+#Substituting the values from age 7 for all missing values at age 14 (ethnicity)
+
+mcs6_cm_merged$ethnicity <- mcs6_cm_merged$FDCE0600
+
+mcs6_cm_merged$ethnicity[is.na(mcs6_cm_merged$ethnicity)] <- mcs6_cm_merged$DDC06E00[is.na(mcs6_cm_merged$ethnicity)]  # Replace NA values
+
+table(mcs6_cm_merged$ethnicity)
+
+#-------------------------------------------------------------------------------
+
+#Substituting the values from age 7 for all missing values at age 14 (sex)
+
+mcs6_cm_merged$sex_pre <- mcs6_cm_merged$FCCSEX00.x
+
+mcs6_cm_merged$sex_pre[is.na(mcs6_cm_merged$sex_pre)] <- mcs6_cm_merged$DCCSEX00[is.na(mcs6_cm_merged$sex_pre)]  # Replace NA values
+
+table(mcs6_cm_merged$sex_pre)
+
+#-------------------------------------------------------------------------------
+
+#Substituting the values from age 11 for all missing values at age 14 (sex)
+
+mcs6_cm_merged$sex <- mcs6_cm_merged$sex_pre
+
+mcs6_cm_merged$sex[is.na(mcs6_cm_merged$sex)] <- mcs6_cm_merged$ECSEX0000[is.na(mcs6_cm_merged$sex)]  # Replace NA values
+
+table(mcs6_cm_merged$sex)
+
+#-------------------------------------------------------------------------------
+
+#Reading in relevant sweep 6 parent data files
+
+mcs_6_parent_interview <-read_sav(file=paste0(inpath,"/mcs6_parent_interview.sav"))
+
+mcs_6_main_parent <- mcs_6_parent_interview[ which(mcs_6_parent_interview$FPNUM00==1), ]
+
+#Choosing the variables that will be needed going forward
+
+mcs_6_parent_interview_relevant <-
+  mcs_6_main_parent[c("MCSID", "FPNUM00", "FELIG00", "FPGENA00", "FPPSEX00", "FPCREL00", "FPPJOB00", 
+                           "FPFMAL00", "FPLOLR0G", "FPLOLR0Q", "FPNTCO00", "FPMAFI00", "FPSTSN00")]
+
+
+mcs6_family_derived <-read_sav(file=paste0(inpath,"/mcs6_family_derived.sav"))
+
+#Choosing the variables that will be needed going forward
+
+mcs6_family_derived_relevant <-
+  mcs6_family_derived[c("MCSID", "FOECDSC0", "FOECDUK0", "FDTOTP00", "FDHLAN00")]
+
+
+#Merging both datasets based on Anonymised Family/Household Identifier 
+
+mcs6_parent_merged <- merge(x=mcs_6_parent_interview_relevant, 
+                        y=mcs6_family_derived_relevant,
+                        by.x = c("MCSID"),
+                        by.y = c("MCSID"),
+                        all.x = TRUE, all.y = 
+                          TRUE)
+
+#--------------------------------------------------------------------------------------------
+
+#Reading in relevant cohort child data files
+
+mcs7_cm_interview <-read_sav(file=paste0(inpath,"/mcs7_cm_interview.sav"))
+mcs7_cm_derived <-read_sav(file=paste0(inpath,"/mcs7_cm_derived.sav"))
+
+
+#Merging both datasets based on Anonymised Family/Household Identifier and Cohort Member number within a MCS family
+
+mcs7_cm_merged <- merge(x=mcs7_cm_interview, 
+                        y=mcs7_cm_derived,
+                        by.x = c("MCSID", "GCNUM00"),
+                        by.y = c("MCSID", "GCNUM00"),
+                        all.x = TRUE, all.y = 
+                          TRUE)
+
+mcs7_cm_merged$FCNUM00 <- mcs7_cm_merged$GCNUM00
+
+
+# Move the column position in dataset
+mcs7_cm_merged <- mcs7_cm_merged[, c(1, 2, 823, 3:822)]
+
+
+# Get the current column names
+column_names <- names(mcs7_cm_merged)
+
+# Loop through column names starting from the third column
+for (i in 4:length(column_names)) {
+  # Add the suffix "_7" to the column name
+  column_names[i] <- paste0(column_names[i], "_7")
+}
+
+# Assign the updated column names back to the dataframe
+names(mcs7_cm_merged) <- column_names
+
+
+#--------------------------------------------------------------------------------------------
+
+#Merge the cohort-level files between sweep 6 and sweep 7
+
+mcs6_cm_and_mcs7_cm_merged <- merge(x=mcs6_cm_merged, 
+                        y=mcs7_cm_merged,
+                        by.x = c("MCSID", "FCNUM00"),
+                        by.y = c("MCSID", "FCNUM00"),
+                        all.x = TRUE, all.y = 
+                          TRUE)
+
+#--------------------------------------------------------------------------------------------
+
+#Merging the parent with the cm dataset
+
+mcs_pre_final <- merge(x = mcs6_cm_and_mcs7_cm_merged, y = mcs6_parent_merged,
+                               by.x = 'MCSID', 
+                               by.y = 'MCSID', all = TRUE)
+
+
+mcs_longitudinal_family_file <-read_sav(file=paste0(inpath,"/mcs_longitudinal_family_file.sav"))
+
+mcs_final <- merge(x = mcs_pre_final, y = mcs_longitudinal_family_file,
+                   by.x = 'MCSID', 
+                   by.y = 'MCSID', all = TRUE)
+
+#-------------------------------------------------------------------------------------------
+
+#Substituting BMI categories from age 17 for missing values at age 14 (the only other time point with UK-adjusted BMI categories)
+
+#GCUK90O7 (BMI categories age 17)
+
+table(mcs_final$FCUK90O6)
+
+mcs_final$BMI <- mcs_final$FCUK90O6
+
+mcs_final$BMI[is.na(mcs_final$BMI)] <- mcs_final$GCUK90O7_7[is.na(mcs_final$BMI)]  # Replace NA values
+
+table(mcs_final$BMI)
+
+#-------------------------------------------------------------------------------------------
+
+#Substituting household income from age 11 for missing values at age 14
+
+#EOECDSC0 (age 11 household income)
+
+table(mcs_final$FOECDSC0)
+
+mcs_final$income_pre <- mcs_final$FOECDSC0
+
+mcs_final$income_pre[is.na(mcs_final$income_pre)] <- mcs_final$EOECDSC0[is.na(mcs_final$income_pre)]  # Replace NA values
+
+table(mcs_final$income_pre)
+
+#-------------------------------------------------------------------------------------------
+
+#EOECDSC0 (age 7 household income)
+
+mcs_final$income <- mcs_final$income_pre
+
+mcs_final$income[is.na(mcs_final$income)] <- mcs_final$DOECDSC0[is.na(mcs_final$income)]  # Replace NA values
+
+table(mcs_final$income)
+
+#-------------------------------------------------------------------------------------------
+
+#Analysing complete cases
+
+complete_cases <- sum(complete.cases(mcs_final$FCWEGT00, mcs_final$GCWEGT00_7))
+complete_cases
+
+#--------------------------------------------------------------------------------------------
+
+#randomly selecting one of the cohort children
+set.seed(26)
+mcs_final_pre <-mcs_final %>% 
+  group_by(MCSID) %>%
+  slice_sample()
+
+#Checking the results
+
+install.packages("epiDisplay")
+library(epiDisplay)
+
+tab1(mcs_final_pre$FCNUM00, sort.group = "decreasing", cum.percent = TRUE)#Number of first and second cohort children
+
+sum(duplicated(mcs_final_pre$MCSID))
+
+mcs_final <-mcs_final_pre
+
+#-------------------------------------------------------------------------------------------
+
+#Overview of participants in waves
+
+table(mcs_final$FISSUED) #issued at sweep 6 (1=Yes, o=No)
+table(mcs_final$GISSUED) #issued at sweep 7 (1=Yes, o=No)
+summary(mcs_final$GOVWT2) #sample and attrition weight at sweep 7 
+
+
+#Creating a variable to illustrate how many participants participated both waves
+
+mcs_final <- mcs_final %>%
+  mutate(wave_participation = ifelse(FISSUED == 1 & GISSUED == 1, 1,
+                          ifelse(FISSUED == 0 & GISSUED == 0, 0, 2)))
+  
+table(mcs_final$wave_participation)
+
+
+#Creating a variable to illustrate overlap of weights and participation wave 7
+
+mcs_final <- mcs_final %>%
+  mutate(weight7_participation7 = ifelse(GISSUED == 1 & GOVWT2 >0, 1,
+                                     ifelse(GISSUED == 0 & (GOVWT2 <0 | is.na(GOVWT2)), 0, 2)))
+
+table(mcs_final$weight7_participation7)
+
+#Creating a variable to illustrate wave 7 participation and DE variable missingness 
+
+mcs_final <- mcs_final %>%
+  mutate(in_wave_but_missing_7 = ifelse(GISSUED ==1 & (!is.na(GCWEGT00_7)) & (!is.na(GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)), 1,
+                                        ifelse(GISSUED ==0 & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)), 0, 2)))
+
+table(mcs_final$in_wave_but_missing_7)
+
+mcs_final <- mcs_final %>%
+  mutate(across_wave_but_missing_7_2 = ifelse(FISSUED ==1 & (!is.na(GCWEGT00_7)) & (!is.na(GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)), 1,
+                                        ifelse(FISSUED ==0 & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)), 0, 2)))
+
+table(mcs_final$across_wave_but_missing_7_2)
+
+#Creating a variable to illustrate wave 6 participation and DE variable missingness 
+
+
+mcs_final <- mcs_final %>%
+  mutate(in_wave_but_missing_6 = ifelse(FISSUED ==1 & (!is.na(FCWEGT00)) & (!is.na(FCLSWT00)) & (!is.na(FCEXWT00)) & (!is.na(FCETLS00)), 1,
+                                        ifelse(FISSUED ==0 & (is.na(FCWEGT00)) & (is.na(FCLSWT00)) & (is.na(FCEXWT00)) & (is.na(FCETLS00)), 0, 2)))
+
+table(mcs_final$in_wave_but_missing_6)
+
+
+mcs_final <- mcs_final %>%
+  mutate(across_wave_but_missing_6_2 = ifelse(GISSUED ==1 & (!is.na(FCWEGT00)) & (!is.na(FCLSWT00)) & (!is.na(FCEXWT00)) & (!is.na(FCETLS00)), 1,
+                                        ifelse(GISSUED ==0 & (is.na(FCWEGT00)) & (is.na(FCLSWT00)) & (is.na(FCEXWT00)) & (is.na(FCETLS00)), 0, 2)))
+
+table(mcs_final$across_wave_but_missing_6_2)
+
+#Creating a variable to illustrate (non)missing data for DE variables at both waves
+
+mcs_final <- mcs_final %>%
+  mutate(across_wave_missingness = ifelse((!is.na(FCWEGT00)) & (!is.na(FCLSWT00)) & (!is.na(FCEXWT00)) & (!is.na(FCETLS00)) & (!is.na(GCWEGT00_7)) & (!is.na (GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)), 1,
+                                        ifelse((is.na(FCWEGT00)) & (is.na(FCLSWT00)) & (is.na(FCEXWT00)) & (is.na(FCETLS00)) & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)), 0, 2)))
+
+table(mcs_final$across_wave_missingness)
+
+#-----------------------------------------------------------------------------------------------------------------------------
+
+#Overview of completion rates per wave
+  
+           
+mcs_final <- mcs_final %>%
+  mutate(within_wave_missingness_6 = ifelse((!is.na(FCWEGT00)) & (!is.na(FCLSWT00)) & (!is.na(FCEXWT00)) & (!is.na(FCETLS00)), 1,
+                                          ifelse((is.na(FCWEGT00)) & (is.na(FCLSWT00)) & (is.na(FCEXWT00)) & (is.na(FCETLS00)), 0, 2)))
+
+table(mcs_final$within_wave_missingness_6)
+
+
+mcs_final <- mcs_final %>%
+  mutate(within_wave_missingness_7 = ifelse((!is.na(GCWEGT00_7)) & (!is.na(GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)), 1,
+                                            ifelse((is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)), 0, 2)))
+
+table(mcs_final$within_wave_missingness_7)
+
+#-------------------------------------------------------------------------------------------------------------------
+
+#Test missingness of DE variables in relationship to other sweep 7 variables 
+
+#-----------------------------------------------------------
+
+#In-person interview variables 
+
+#In relationship to BMI (n=3014 provided information about BMI but not the 4 DE variables)
+
+mcs_final <- mcs_final %>%
+  mutate(within_wave_missing_values = ifelse((!is.na(GCBMIN7_7)) & (!is.na(GCWEGT00_7)) & (!is.na (GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)), 1,
+                                          ifelse((!is.na(GCBMIN7_7)) & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)), 0, ifelse((is.na(GCBMIN7_7)) & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)), 2, 3))))
+
+table(mcs_final$within_wave_missing_values)
+
+#In relationship to depressive mood item (n=3403 provided information about depressive mood but not the 4 DE variables)
+
+mcs_final <- mcs_final %>%
+  mutate(within_wave_missing_values_2 = ifelse((!is.na(GCPHDE00_7)) & (!is.na(GCWEGT00_7)) & (!is.na (GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)), 1,
+                                             ifelse((!is.na(GCPHDE00_7)) & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)), 0, ifelse((is.na(GCPHDE00_7)) & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)), 2, 3))))
+
+table(mcs_final$within_wave_missing_values_2)
+
+#-------------------------------------------------------------------------------------------------------------------------------
+
+#Now comparing it to variables which were collected with the same format of data collection 
+
+#In relationship to reported activities (n=31 reported on activity and not on DE variables)
+
+mcs_final <- mcs_final %>%
+  mutate(within_wave_missing_values_3 = ifelse((!is.na(GCDISC00_7)) & (!is.na(GCWEGT00_7)) & (!is.na (GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)), 1,
+                                               ifelse((!is.na(GCDISC00_7)) & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)), 0, ifelse((is.na(GCDISC00_7)) & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)), 2, 3))))
+
+table(mcs_final$within_wave_missing_values_3)
+
+#------------------------------------------------------------------------------------------------------------------------
+
+#Identifying participants who have been issued at sweep 7 but do not have data for DE
+
+mcs_final <- mcs_final %>%
+  mutate(discrepancy = ifelse(within_wave_missingness_7 == 1 & GISSUED == 0, 1, 0))
+
+table(mcs_final$discrepancy)
+
+df_ones <- mcs_final %>% filter(discrepancy == 1) #people were not issued at sweep 7 (GISSUED) but provided input at that timepoint 
+df_zeros <- mcs_final %>% filter(discrepancy == 0)
+
+
+#-----------------------------------------------------------------------------------------------------------------------------
+
+#Overview Sleep Quality and Disordered Eating Report 
+
+table(mcs_final$GCSQLT00_7)
+summary(mcs_final$GCSQLT00_7)
+
+mcs_final <- mcs_final %>%
+  mutate(sleep_and_de_missing = ifelse((!is.na(FCWEGT00)) & (!is.na(FCLSWT00)) & (!is.na(FCEXWT00)) & (!is.na(FCETLS00)) & (!is.na(GCWEGT00_7)) & (!is.na (GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)) & (!is.na(GCSQLT00_7)), 1,
+                                          ifelse((is.na(FCWEGT00)) & (is.na(FCLSWT00)) & (is.na(FCEXWT00)) & (is.na(FCETLS00)) & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)) & (is.na(GCSQLT00_7)), 0, 2)))
+
+table(mcs_final$sleep_and_de_missing)
+
+#------------------------------------------------------------------------------------------------------------------------------------
+
+#Overview of self-reported sleep variables (as reported at age 14)
+
+table(mcs_final$FCSLWK00)#going to sleep (week)
+table(mcs_final$FCWUWK00)#waking up (week)
+table(mcs_final$FCSLWE00)#going to sleep (weekend)
+table(mcs_final$FCWUWE00)#waking up (weekend)
+table(mcs_final$FCSLLN00)#sleep latency
+table(mcs_final$FCSLTR00)#WASO
+
+mcs_final <- mcs_final %>%
+  mutate(sleep_de_all = ifelse((!is.na(FCWEGT00)) & (!is.na(FCLSWT00)) & (!is.na(FCEXWT00)) & (!is.na(FCETLS00)) & (!is.na(GCWEGT00_7)) & (!is.na (GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)) & (!is.na(GCSQLT00_7)) & (!is.na(FCSLWK00)) & (!is.na(FCWUWK00)) & (!is.na(FCSLWE00)) & (!is.na(FCWUWE00)) & (!is.na(FCSLLN00)) & (!is.na(FCSLTR00)), 1,
+                                       ifelse((is.na(FCWEGT00)) & (is.na(FCLSWT00)) & (is.na(FCEXWT00)) & (is.na(FCETLS00)) & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)) & (is.na(GCSQLT00_7)) & (is.na(FCSLWK00)) & (is.na(FCWUWK00)) & (is.na(FCSLWE00)) & (is.na(FCWUWE00)) & (is.na(FCSLLN00)) & (is.na(FCSLTR00)), 0, 2)))
+
+table(mcs_final$sleep_de_all)
+
+#------------------------------------------------------------------------------------------------------------------
+
+#Missingness/reporting of Covariates 
+
+#all covariates: sex + ethnicity + BMI + income
+
+
+mcs_final <- mcs_final %>%
+  mutate(missingness_all = ifelse((!is.na(FCWEGT00)) & (!is.na(FCLSWT00)) & (!is.na(FCEXWT00)) & (!is.na(FCETLS00)) & (!is.na(GCWEGT00_7)) & (!is.na (GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)) & (!is.na(GCSQLT00_7)) & (!is.na(FCSLWK00)) & (!is.na(FCWUWK00)) & (!is.na(FCSLWE00)) & (!is.na(FCWUWE00)) & (!is.na(FCSLLN00)) & (!is.na(FCSLTR00)) & (!is.na(FCCSEX00.x)) & (!is.na(ethnicity)) & (!is.na(BMI)) & (!is.na(income)), 1,
+                               ifelse((is.na(FCWEGT00)) & (is.na(FCLSWT00)) & (is.na(FCEXWT00)) & (is.na(FCETLS00)) & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)) & (is.na(GCSQLT00_7)) & (is.na(FCSLWK00)) & (is.na(FCWUWK00)) & (is.na(FCSLWE00)) & (is.na(FCWUWE00)) & (is.na(FCSLLN00)) & (is.na(FCSLTR00)) & (is.na(FCCSEX00.x)) & (is.na(ethnicity)) & (is.na(BMI)) & (is.na(income)), 0, 2)))
+
+table(mcs_final$missingness_all)
+
+#------------------------------------------------------------------------------------------------------------------
+
+
+#Missingness/reporting of Covariates 
+
+#all covariates: sex + ethnicity + BMI + income
+
+
+mcs_final <- mcs_final %>%
+  mutate(missingness_all = ifelse((!is.na(FCWEGT00)) & (!is.na(FCLSWT00)) & (!is.na(FCEXWT00)) & (!is.na(FCETLS00)) & (!is.na(GCWEGT00_7)) & (!is.na (GCLSWT00_7)) & (!is.na(GCEXWT00_7)) & (!is.na(GCETLS00_7)) & (!is.na(GCSQLT00_7)) & (!is.na(FCSLWK00)) & (!is.na(FCWUWK00)) & (!is.na(FCSLWE00)) & (!is.na(FCWUWE00)) & (!is.na(FCSLLN00)) & (!is.na(FCSLTR00)) & (!is.na(sex)) & (!is.na(ethnicity)) & (!is.na(BMI)) & (!is.na(income)), 1,
+                                  ifelse((is.na(FCWEGT00)) & (is.na(FCLSWT00)) & (is.na(FCEXWT00)) & (is.na(FCETLS00)) & (is.na(GCWEGT00_7)) & (is.na(GCLSWT00_7)) & (is.na(GCEXWT00_7)) & (is.na(GCETLS00_7)) & (is.na(GCSQLT00_7)) & (is.na(FCSLWK00)) & (is.na(FCWUWK00)) & (is.na(FCSLWE00)) & (is.na(FCWUWE00)) & (is.na(FCSLLN00)) & (is.na(FCSLTR00)) & (is.na(sex)) & (is.na(ethnicity)) & (is.na(BMI)) & (is.na(income)), 0, 2)))
+
+table(mcs_final$missingness_all)
+
+#------------------------------------------------------------------------------------------------------------------
+
+#Renaming height (cm) and weight (kg) for further analyses
+
+mcs_final$height <- mcs_final$FCHTCM00
+mcs_final$weight <- mcs_final$FCWTCM00
+mcs_final$height_11 <- mcs_final$ECHTCMA0
+mcs_final$weight_11 <- mcs_final$ECWTCMA0
+
+#Calculating how many people have (non)missing weight and height information 
+
+mcs_final <- mcs_final %>%
+  mutate(missingness_height_weight = ifelse((!is.na(height)) & (!is.na(weight)) & (!is.na(height_11)) & (!is.na(weight_11)), 4,
+                                  ifelse((is.na(height)) & (is.na(weight)) & (is.na(height_11)) & (is.na(weight_11)), 0, 
+                                         ifelse((!is.na(height)) & (!is.na(weight)) & (is.na(height_11)) & (is.na(weight_11)), 1,
+                                                ifelse((is.na(height)) & (is.na(weight)) & (!is.na(height_11)) & (!is.na(weight_11)), 2, 5)))))
+
+table(mcs_final$missingness_height_weight)
+
+
+
+
