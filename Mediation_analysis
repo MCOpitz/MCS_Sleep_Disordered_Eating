@@ -1,0 +1,92 @@
+#Please refer to previous files for an overview on how to read in the data and how to prepare the dataset(s)
+
+#Mediation Analysis with depressive symptoms as mediator 
+
+install.packages("lavaan")
+library(lavaan)
+
+#--------------------------------------------------------------------
+
+#Preparing the variables for depressive symptoms (FCMDSA00, FCMDSB00, FCMDSC00, FCMDSD00, FCMDSE00, FCMDSF00, FCMDSG00, FCMDSH00, FCMDSI00, FCMDSJ00, FCMDSK00, FCMDSL00, FCMDSM00)
+
+#Re-coding the answer categories, so that 0=not true, 1=sometimes, 3=true (for ease of interpretation, based on previous publications)
+
+library(dplyr)
+
+depression_columns <- c("FCMDSA00", "FCMDSB00", "FCMDSC00", "FCMDSD00", "FCMDSE00", 
+                        "FCMDSF00", "FCMDSG00", "FCMDSH00", "FCMDSI00", "FCMDSJ00", 
+                        "FCMDSK00", "FCMDSL00", "FCMDSM00")
+for (col in depression_columns) {
+  final_analysis[[col]][final_analysis[[col]] == 1] <- 0
+  final_analysis[[col]][final_analysis[[col]] == 2] <- 1
+  final_analysis[[col]][final_analysis[[col]] == 3] <- 2
+}
+
+#calculating depressive symptom sum score 
+
+final_analysis$depression_sum_score <- rowSums(final_analysis[depression_columns], na.rm = TRUE)
+
+summary(final_analysis$depression_sum_score)
+table(final_analysis$depression_sum_score)
+
+
+
+#-------------------------------------------------------------------
+
+#Disordered Eating (age 14) predicting Overall Sleep Quality (age 17), mediated by depressive symptoms (Short Moods and Feelings Questionnaire)
+#Specifying the mediation model
+
+
+mediation_model <- '
+  # Measurement model
+  
+Disordered_eating =~ NA*weight_loss_intention + dietary_restriction + excessive_exercise 
+Depression =~ NA*FCMDSA00 + FCMDSB00 + FCMDSC00 + FCMDSD00 + FCMDSE00 + FCMDSF00 + FCMDSG00 + FCMDSH00 + FCMDSI00 + FCMDSJ00 + FCMDSK00 + FCMDSL00 + FCMDSM00
+
+
+Disordered_eating ~~ Disordered_eating
+Depression ~~ Depression
+  
+#Structural paths
+  
+overall_sleep_quality_7 ~  B*Depression + C*Disordered_eating + sex + ethnicity + BMI + income + sleep_categories_week + sleep_categories_weekend + sleep_latency + WASO + social_jetlag + wake_up_week + wake_up_weekend + bed_time_week + bed_time_weekend
+
+Depression ~ A*Disordered_eating + sex + ethnicity + BMI + income + sleep_categories_week + sleep_categories_weekend + sleep_latency + WASO + social_jetlag + wake_up_week + wake_up_weekend + bed_time_week + bed_time_weekend
+
+Disordered_eating ~ sex + ethnicity + BMI + income + sleep_categories_week + sleep_categories_weekend + sleep_latency + WASO + social_jetlag + wake_up_week + wake_up_weekend + bed_time_week + bed_time_weekend
+  
+#Indirect and total effect
+  
+indirect := A*B
+Total := C + A*B
+
+
+'
+
+# Fit the model
+
+mediation_fit <- sem(mediation_model,
+                     data = final_analysis,
+                     estimator = "WLSMV",
+                     se = "robust",
+                     std.lv = TRUE)
+
+summary(mediation_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+
+modindices(mediation_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+
+
+
+
+
+
+
+
+
+
+
