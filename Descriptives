@@ -1,0 +1,350 @@
+Please read previous files on how to read in the data and prepare the final dataset(s)
+
+#----------------------------------------------------------
+install.packages("lessR") 
+
+library(lessR) 
+library(tidyverse)
+
+#----------------------------------------------------------
+
+#Full dataset
+
+table(final_analysis$sex)
+table(final_analysis$ethnicity)
+table(final_analysis$FCUK90O6)
+table(final_analysis$FOECDSC0)
+
+prop.table(table(final_analysis$sex))
+prop.table(table(final_analysis$ethnicity))
+prop.table(table(final_analysis$FCUK90O6))
+prop.table(table(final_analysis$FOECDSC0))
+
+
+tab1(final_analysis$weight_loss_intention, sort.group = "decreasing", cum.percent = TRUE)
+tab1(final_analysis$weight_loss_intention_7, sort.group = "decreasing", cum.percent = TRUE)
+tab1(final_analysis$dietary_restriction, sort.group = "decreasing", cum.percent = TRUE)
+tab1(final_analysis$dietary_restriction_7, sort.group = "decreasing", cum.percent = TRUE)
+tab1(final_analysis$excessive_exercise, sort.group = "decreasing", cum.percent = TRUE)
+tab1(final_analysis$excessive_exercise_7, sort.group = "decreasing", cum.percent = TRUE)
+
+#-----------------------------------------------------------------------------------------
+
+#Age 14
+
+#Illustrating weight loss intention by sex 
+table(final_analysis$sex, final_analysis$weight_loss_intention) #weight loss intention depending on reported sex
+tab <- with(final_analysis, table(sex, weight_loss_intention))
+prop.table(tab, 1)*100 #percentages instead of number of participants 
+
+#Illustrating dietary restriction by sex 
+table(final_analysis$sex, final_analysis$dietary_restriction) #dietary_restriction depending on reported sex
+tab2 <- with(final_analysis, table(sex, dietary_restriction))
+prop.table(tab2, 1)*100 #percentages instead of number of participants
+
+#Illustrating excessive_exercise by sex 
+table(final_analysis$sex, final_analysis$excessive_exercise) #excessive_exercise depending on reported sex
+tab3 <- with(final_analysis, table(sex, excessive_exercise))
+prop.table(tab3, 1)*100 #percentages instead of number of participants
+
+#Age 17
+
+#Illustrating weight loss intention by sex 
+table(final_analysis$sex, final_analysis$weight_loss_intention_7) #weight loss intention depending on reported sex
+tab4 <- with(final_analysis, table(sex, weight_loss_intention_7))
+prop.table(tab4, 1)*100 #percentages instead of number of participants 
+
+
+#Illustrating dietary restriction by sex 
+table(final_analysis$sex, final_analysis$dietary_restriction_7) #dietary_restriction depending on reported sex
+tab5 <- with(final_analysis, table(sex, dietary_restriction_7))
+prop.table(tab5, 1)*100 #percentages instead of number of participants
+
+#Illustrating excessive_exercise by sex 
+table(final_analysis$sex, final_analysis$excessive_exercise_7) #excessive_exercise depending on reported sex
+tab6 <- with(final_analysis, table(sex, excessive_exercise_7))
+prop.table(tab6, 1)*100 #percentages instead of number of participants
+
+#Age 14 BMI
+
+#Illustrating weight loss intention by BMI 
+table(final_analysis$FCUK90O6, final_analysis$weight_loss_intention) #weight loss intention depending on reported BMI
+tab7 <- with(final_analysis, table(FCUK90O6, weight_loss_intention))
+prop.table(tab7, 1)*100 #percentages instead of number of participants 
+
+#Illustrating dietary restriction by BMI 
+table(final_analysis$FCUK90O6, final_analysis$dietary_restriction) #dietary_restriction depending on reported BMI
+tab8 <- with(final_analysis, table(FCUK90O6, dietary_restriction))
+prop.table(tab8, 1)*100 #percentages instead of number of participants
+
+#Illustrating excessive_exercise by BMI 
+table(final_analysis$FCUK90O6, final_analysis$excessive_exercise) #excessive_exercise depending on reported BMI
+tab9 <- with(final_analysis, table(FCUK90O6, excessive_exercise))
+prop.table(tab9, 1)*100 #percentages instead of number of participants
+
+#Age 17 BMI
+
+#Illustrating weight loss intention by BMI 
+table(final_analysis$FCUK90O6, final_analysis$weight_loss_intention_7) #weight loss intention depending on reported BMI
+tab10 <- with(final_analysis, table(FCUK90O6, weight_loss_intention_7))
+prop.table(tab10, 1)*100 #percentages instead of number of participants 
+
+
+#Illustrating dietary restriction by BMI 
+table(final_analysis$FCUK90O6, final_analysis$dietary_restriction_7) #dietary_restriction depending on reported BMI
+tab11 <- with(final_analysis, table(FCUK90O6, dietary_restriction_7))
+prop.table(tab11, 1)*100 #percentages instead of number of participants
+
+#Illustrating excessive_exercise by BMI 
+table(final_analysis$FCUK90O6, final_analysis$excessive_exercise_7) #excessive_exercise depending on reported BMI
+tab12 <- with(final_analysis, table(FCUK90O6, excessive_exercise_7))
+prop.table(tab12, 1)*100 #percentages instead of number of participants
+
+#Age 14 Household Income 
+
+#Illustrating weight loss intention by Household Income 
+table(final_analysis$FOECDSC0, final_analysis$weight_loss_intention) #weight loss intention depending on reported Household Income
+tab7 <- with(final_analysis, table(FOECDSC0, weight_loss_intention))
+prop.table(tab7, 1)*100 #percentages instead of number of participants 
+
+#Illustrating dietary restriction by Household Income 
+table(final_analysis$FOECDSC0, final_analysis$dietary_restriction) #dietary_restriction depending on reported Household Income
+tab8 <- with(final_analysis, table(FOECDSC0, dietary_restriction))
+prop.table(tab8, 1)*100 #percentages instead of number of participants
+
+#Illustrating excessive_exercise by Household Income 
+table(final_analysis$FOECDSC0, final_analysis$excessive_exercise) #excessive_exercise depending on reported Household Income
+tab9 <- with(final_analysis, table(FOECDSC0, excessive_exercise))
+prop.table(tab9, 1)*100 #percentages instead of number of participants
+
+#Age 17 Household Income
+
+#Illustrating weight loss intention by Household Income 
+table(final_analysis$FOECDSC0, final_analysis$weight_loss_intention_7) #weight loss intention depending on reported Household Income
+tab10 <- with(final_analysis, table(FOECDSC0, weight_loss_intention_7))
+prop.table(tab10, 1)*100 #percentages instead of number of participants 
+
+
+#Illustrating dietary restriction by Household Income 
+table(final_analysis$FOECDSC0, final_analysis$dietary_restriction_7) #dietary_restriction depending on reported Household Income
+tab11 <- with(final_analysis, table(FOECDSC0, dietary_restriction_7))
+prop.table(tab11, 1)*100 #percentages instead of number of participants
+
+#Illustrating excessive_exercise by Household Income 
+table(final_analysis$FOECDSC0, final_analysis$excessive_exercise_7) #excessive_exercise depending on reported Household Income
+tab12 <- with(final_analysis, table(FOECDSC0, excessive_exercise_7))
+prop.table(tab12, 1)*100 #percentages instead of number of participants
+
+#Age 14 Ethnicity
+
+#Illustrating weight loss intention by Ethnicity 
+table(final_analysis$ethnicity, final_analysis$weight_loss_intention) #weight loss intention depending on reported Ethnicity
+tab7 <- with(final_analysis, table(ethnicity, weight_loss_intention))
+prop.table(tab7, 1)*100 #percentages instead of number of participants 
+
+#Illustrating dietary restriction by Ethnicity 
+table(final_analysis$ethnicity, final_analysis$dietary_restriction) #dietary_restriction depending on reported Ethnicity
+tab8 <- with(final_analysis, table(ethnicity, dietary_restriction))
+prop.table(tab8, 1)*100 #percentages instead of number of participants
+
+#Illustrating excessive_exercise by Ethnicity 
+table(final_analysis$ethnicity, final_analysis$excessive_exercise) #excessive_exercise depending on reported Ethnicity
+tab9 <- with(final_analysis, table(ethnicity, excessive_exercise))
+prop.table(tab9, 1)*100 #percentages instead of number of participants
+
+#Age 17 Ethnicity
+
+#Illustrating weight loss intention by Ethnicity
+table(final_analysis$ethnicity, final_analysis$weight_loss_intention_7) #weight loss intention depending on reported Ethnicity
+tab10 <- with(final_analysis, table(ethnicity, weight_loss_intention_7))
+prop.table(tab10, 1)*100 #percentages instead of number of participants 
+
+
+#Illustrating dietary restriction by Ethnicity 
+table(final_analysis$ethnicity, final_analysis$dietary_restriction_7) #dietary_restriction depending on reported Ethnicity
+tab11 <- with(final_analysis, table(ethnicity, dietary_restriction_7))
+prop.table(tab11, 1)*100 #percentages instead of number of participants
+
+#Illustrating excessive_exercise by Ethnicity 
+table(final_analysis$ethnicity, final_analysis$excessive_exercise_7) #excessive_exercise depending on reported Ethnicity
+tab12 <- with(final_analysis, table(ethnicity, excessive_exercise_7))
+prop.table(tab12, 1)*100 #percentages instead of number of participants
+
+#--------------------------------------------------------------------------------------------
+
+#Absolute participant numbers for disordered eating outcomes
+
+table(final_analysis$weight_loss_intention)
+table(final_analysis$weight_loss_intention_7)
+table(final_analysis$dietary_restriction)
+table(final_analysis$dietary_restriction_7)
+table(final_analysis$excessive_exercise)
+table(final_analysis$excessive_exercise_7)
+
+#-------------------------------------------------------------------------------------------
+
+#Sleep Characteristics Descriptives
+
+install.packages("psych")
+library(psych)
+
+table(final_analysis$sleep_categories_week)
+table(final_analysis$sleep_categories_weekend)
+table(final_analysis$sleep_latency)
+table(final_analysis$WASO)
+table(final_analysis$wake_up_week)
+table(final_analysis$wake_up_weekend)
+table(final_analysis$bed_time_week)
+table(final_analysis$bed_time_weekend)
+summary(final_analysis$social_jetlag)
+describe(final_analysis$social_jetlag)
+table(final_analysis$overall_sleep_quality_7)
+
+#Age 14
+prop.table(table(final_analysis$sleep_categories_week))
+prop.table(table(final_analysis$sleep_categories_weekend))
+prop.table(table(final_analysis$sleep_latency))
+prop.table(table(final_analysis$WASO))
+prop.table(table(final_analysis$wake_up_week))
+prop.table(table(final_analysis$wake_up_weekend))
+prop.table(table(final_analysis$bed_time_week))
+prop.table(table(final_analysis$bed_time_weekend))
+
+#Age 17
+prop.table(table(final_analysis$overall_sleep_quality_7))        
+
+#------------------------------------------------------------------------------------------
+
+#Summary statistics by group (in this case sex)
+
+#Sleep Duration
+
+duration_week_sex <- wilcox.test(sleep_categories_week ~ sex, data = final_analysis,
+                           exact = FALSE)
+duration_week_sex
+
+#Sleep Onset Latency
+
+latency_sex <- wilcox.test(sleep_latency ~ sex, data = final_analysis,
+                       exact = FALSE)
+latency_sex
+
+
+#WASO
+
+
+WASO_sex <- wilcox.test(WASO ~ sex, data = final_analysis,
+                           exact = FALSE)
+WASO_sex
+
+
+#-------------------------------------------------------------------------------------------
+
+#Time Use Data Subset
+
+table(final_analysis_TUD$sex)
+table(final_analysis_TUD$ethnicity)
+table(final_analysis_TUD$FCUK90O6)
+table(final_analysis_TUD$FOECDSC0)
+
+prop.table(table(final_analysis_TUD$sex))
+prop.table(table(final_analysis_TUD$ethnicity))
+prop.table(table(final_analysis_TUD$FCUK90O6))
+prop.table(table(final_analysis_TUD$FOECDSC0))
+
+table(final_analysis_TUD$sleep_categories_week_TUD)
+table(final_analysis_TUD$sleep_categories_weekend_TUD)
+table(final_analysis_TUD$daytime_nap_week)
+table(final_analysis_TUD$daytime_nap_weekend)
+table(final_analysis_TUD$night_awakening_week)
+table(final_analysis_TUD$night_awakening_weekend)
+
+prop.table(table(final_analysis_TUD$sleep_categories_week_TUD))
+prop.table(table(final_analysis_TUD$sleep_categories_weekend_TUD))
+prop.table(table(final_analysis_TUD$daytime_nap_week))
+prop.table(table(final_analysis_TUD$daytime_nap_weekend))
+prop.table(table(finfinal_analysis_TUDal_TUD$night_awakening_week))
+prop.table(table(final_analysis_TUD$night_awakening_weekend))
+
+#----------------------------------------------------------
+
+Plot(overall_sleep_quality_7, data=final_analysis) 
+
+#Sleep on a weekday
+
+Plot(sleep_categories_week, data=final_analysis) 
+Plot(sleep_categories_weekend, data=final_analysis) 
+median(final_analysis$wake_week, na.rm=TRUE)
+median(final_analysis$bedtime_week, na.rm=TRUE)
+
+#Sleep on a weekend
+
+Plot(sleep_categories_week_TUD, data=final_analysis) 
+Plot(sleep_categories_weekend_TUD, data=final_analysis) 
+median(final_analysis$wake_weekend, na.rm=TRUE)
+median(final_analysis$bedtime_weekend, na.rm=TRUE)
+
+#Sleep onset latency
+
+Plot(sleep_latency, data=final_analysis) 
+
+#WASO
+
+Plot(WASO, data=final_analysis) 
+
+#Social Jetlag
+
+Plot(social_jetlag, data=final_analysis) 
+
+library(ggplot2)
+library(scales)
+
+#---------------------------------------------------------------------
+
+#Overview Depressive Symptoms (complete sample)
+
+library(dplyr)
+library(psych)
+
+depression_columns <- c("FCMDSA00", "FCMDSB00", "FCMDSC00", "FCMDSD00", "FCMDSE00", 
+                        "FCMDSF00", "FCMDSG00", "FCMDSH00", "FCMDSI00", "FCMDSJ00", 
+                        "FCMDSK00", "FCMDSL00", "FCMDSM00")
+for (col in depression_columns) {
+  final_analysis[[col]][final_analysis[[col]] == 1] <- 0
+  final_analysis[[col]][final_analysis[[col]] == 2] <- 1
+  final_analysis[[col]][final_analysis[[col]] == 3] <- 2
+}
+
+#calculating depressive symptom sum score 
+
+final_analysis$depression_sum_score <- rowSums(final_analysis[depression_columns], na.rm = TRUE)
+summary(final_analysis$depression_sum_score)
+describe(final_analysis$depression_sum_score)
+hist(final_analysis$depression_sum_score)
+
+install.packages("moments")
+library(moments)
+
+skewness(final_analysis$depression_sum_score)
+kurtosis(final_analysis$depression_sum_score)
+jarque.test(final_analysis$depression_sum_score)
+
+#Summary statistics by group (in this case sex)
+tapply(final_analysis$depression_sum_score, final_analysis$sex, summary)
+
+aggregate(depression_sum_score ~ sex, final_analysis, sd)#standard deviation
+
+
+# Install
+if(!require(devtools)) install.packages("devtools")
+devtools::install_github("kassambara/ggpubr")
+
+# Plot depression by sex and color by group
+library("ggpubr")
+ggboxplot(final_analysis, x = "sex", y = "depression_sum_score", 
+          color = "sex", palette = c("darkgreen", "darkblue"),
+          ylab = "depression_sum_score", xlab = "sex")
+
+dep_sex <- wilcox.test(depression_sum_score ~ sex, data = final_analysis,
+                   exact = FALSE)
+dep_sex
