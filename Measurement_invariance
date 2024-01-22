@@ -1,0 +1,156 @@
+#Please see previous files on how to read in the data and prepare final dataset(s)
+
+#--------------------------------------------------------------------------
+
+#Loading relevant packages
+
+library(lavaan)
+library(foreign)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(rmarkdown)
+library(knitr)
+
+#--------------------------------------------------------------------------
+
+#Defining error structure
+#constraining error term covariances to equality across waves
+
+errorstructure <-
+  '
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+'
+
+#--------------------------------------------------------------------------
+
+#Configural Invariance
+
+configural.v1 <-
+  
+  '
+# Disordered Eating factor loadings defined
+
+Disordered_eating =~ NA*dietary_restriction + weight_loss_intention + excessive_exercise 
+
+#allowing each latent variable’s first factor loading to vary freely, achieved through the “NA*”
+
+Disordered_eating_7 =~ NA*dietary_restriction_7 + weight_loss_intention_7 + excessive_exercise_7
+
+
+# Disordered_eating variance constrained to 1
+# using ~~ correlates Disordered_eating with itself, which effectively defines its variance, which we set to 1 with 
+# the operator 1*
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+
+'
+configural.model <- paste(configural.v1, errorstructure, sep = ' ', collapse = NULL)
+configural.fit <- cfa(configural.model,
+                      data = final_analysis,
+                      estimator = "WLSMV",
+                      se = "robust",
+                      std.lv = TRUE)
+summary(configural.fit, fit.measures = TRUE, standardized=TRUE)
+
+#the line “std.lv = TRUE.” automatically fixes the variance of factors to 1, 
+#rather than their factor loadings, which is the default setting in lavaan
+
+#--------------------------------------------------------------------------
+
+#Metric Invariance
+
+
+metric.v1 <-
+  '
+# Disordered Eating factor loadings defined
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+
+# Disordered_eating variance constrained to 1
+# using ~~ correlates Disordered_eating with itself, which effectively defines its variance, which we set to 1 with 
+# the operator 1*
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+'
+metric.model <- paste(metric.v1, errorstructure, sep = ' ', collapse = NULL)
+metric.fit <- cfa(metric.model,
+                  data = final_analysis,
+                  estimator = "WLSMV",
+                  se = "robust",
+                  std.lv = TRUE)
+summary(metric.fit, fit.measures = TRUE, standardized=TRUE)
+
+#--------------------------------------------------------------------------
+
+#Scalar Invariance
+
+# Intercepts constrained
+
+scalar.v1 <-
+  
+  '
+weight_loss_intention ~ de1i*1
+weight_loss_intention_7 ~ de1i*1
+
+dietary_restriction ~ de2i*1
+dietary_restriction_7 ~ de2i*1
+
+excessive_exercise ~ de3i*1
+excessive_exercise_7 ~ de3i*1
+
+#Disordered_eating ~1
+#Disordered_eating_7 ~1
+
+'
+
+scalar.model <- paste(metric.v1, errorstructure, scalar.v1, sep = ' ', collapse = NULL)
+scalar.fit <- cfa(scalar.model, data = final_analysis,
+                  estimator = "WLSMV",
+                  se = "robust",
+                  std.lv = TRUE)
+summary(scalar.fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(scalar.fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+#--------------------------------------------------------------------------
+
+#Residual Invariance
+
+
+residual.v1 <-
+  
+  '
+# Residual error constrained across waves
+
+weight_loss_intention ~~ de1u*weight_loss_intention
+weight_loss_intention_7 ~~ de1u*weight_loss_intention_7
+
+dietary_restriction ~~ de2u*dietary_restriction
+dietary_restriction_7 ~~ de2u*dietary_restriction_7
+
+excessive_exercise ~~ de3u*excessive_exercise
+excessive_exercise_7 ~~ de3u*excessive_exercise_7
+'
+
+residual.model <- paste(metric.v1, errorstructure, scalar.v1, residual.v1, sep = ' ', collapse = NULL)
+residual.fit <- cfa(residual.model, data = final_analysis,
+                    estimator = "WLSMV",
+                    se = "robust",
+                    std.lv = TRUE)
+summary(residual.fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+
