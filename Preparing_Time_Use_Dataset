@@ -1,0 +1,380 @@
+#Preparing for the data to be read in 
+
+#Specify work directory
+setwd("C:/") #Add your own directory
+
+#Path to MCS Data (age 14 sweep)
+inpath <- "C:/" #Add your own path
+
+#Path to store results
+outpath <- "C:" #Add your own pathway
+
+install.packages("tidyverse")
+install.packages("haven")
+install.packages("lubridate")
+install.packages("naniar")
+
+library(tidyverse)
+library(haven)
+library(foreign)
+library(naniar)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+#Read in relevant datafile 
+
+mcs6_time_use <-read_sav(file=paste0(inpath,"/mcs6_cm_tud_harmonised.sav"))
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+#Check for missing values
+
+colSums(is.na(mcs6_time_use))
+
+missing_rows_count <- sum(!complete.cases(mcs6_time_use))
+
+table <- data.frame(
+  "Missing Rows Count" = missing_rows_count,
+  "Complete Rows Count" = nrow(mcs6_time_use) - missing_rows_count
+)
+
+table
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+# Load the lubridate package 
+library(lubridate)
+
+
+# Add 10 to each time value to account for minimum value of 10
+time_in_minutes <-  240 + ((mcs6_time_use$`FCTUDSLOT`)-1)  * 10
+
+# Convert time values to POSIXct format
+time_in_seconds <- time_in_minutes * 60
+time_in_POSIXct <- as.POSIXct(time_in_seconds, origin = "1970-01-01", tz = "UTC")
+
+# Format time values as "hours:minutes" and store in a new variable
+mcs6_time_use$time_formatted <- format(time_in_POSIXct, format = "%H:%M")
+mcs6_time_use$time_formatted
+
+
+#----------------------------------------------------------------------------------------------------------------
+
+#Recode activities into dummy variable
+
+mcs6_time_use$sleep_dummy <- ifelse(mcs6_time_use$FCTUDACT == 1, 1, 0)
+
+#Create a variable that identifies changes in activities (from sleep and to sleep)
+
+mcs6_time_use$sleep_change=ifelse(lead(mcs6_time_use$sleep_dummy)==mcs6_time_use$sleep_dummy, "0", "1")
+
+
+# Create a new variable indicating when the subject is not sleeping 
+mcs6_time_use$not_sleeping <- ifelse(mcs6_time_use$`sleep_dummy` != 1 & dplyr::lag(mcs6_time_use$`sleep_dummy`) == 1, 1, 0)
+
+# Print the result
+mcs6_time_use$not_sleeping
+
+
+#----------------------------------------------------------------------------------------------------------------
+
+
+#Create new dataframe which aggregates data to illustrate how many 10-min slots each participant slept 
+
+sleep_total <- data.frame(aggregate(mcs6_time_use$sleep_dummy, by = list(MCSID=mcs6_time_use$MCSID, FCNUM00=mcs6_time_use$FCNUM00, FCTUDWEEKDAY=mcs6_time_use$FCTUDWEEKDAY), FUN=sum))
+
+#calculate the number of hours each participant slept per day
+
+sleep_total$hours_slept <- ((sleep_total$x*10)/60)
+
+#Descriptives of hours slept 
+
+summary(sleep_total$hours_slept)#need to cross-check with other dataset (--> being sick still included)
+table(sleep_total$hours_slept)
+
+#Count the times of awakening for each individual
+
+awakenings <- data.frame(aggregate(mcs6_time_use$not_sleeping, by = list(MCSID=mcs6_time_use$MCSID, FCNUM00=mcs6_time_use$FCNUM00, FCTUDWEEKDAY=mcs6_time_use$FCTUDWEEKDAY), FUN=sum))
+
+
+#----------------------------------------------------------------------------------------------------------------
+
+
+#transform dataset to wide
+
+library(tidyr)
+install.packages("reshape2")
+library(reshape2)
+
+data_wide <- dcast(mcs6_time_use, MCSID + FCNUM00 + FCTUDWEEKDAY + FCTUDMOD + FCTUDMONTH ~ FCTUDSLOT, value.var="sleep_dummy")
+
+
+#Check for missing values
+
+
+missing_rows_count_2 <- sum(!complete.cases(data_wide))
+
+table_2 <- data.frame(
+  "Missing Rows Count" = missing_rows_count_2,
+  "Complete Rows Count" = nrow(data_wide) - missing_rows_count_2
+)
+
+table_2
+
+#Dropping all cases with missing values
+
+data_wide_clean <- na.omit(data_wide)
+
+#----------------------------------------------------------------------------------------------------------------
+
+#Calculate 24h Sleep time for each row
+
+library(dplyr)
+
+data_wide_clean$h_sleep <- rowSums(data_wide_clean[, c(6:149)])*10/60
+
+
+#----------------------------------------------------------------------------------------------------------------
+
+#Calculate daytime sleep time per participant, per day (daytime = 11:30-20:00 --> columns 51 to 102 in the wide clean dataset)
+
+
+data_wide_clean$daytime_sleep_minutes <- ((rowSums(data_wide_clean[, c(51:102)], na.rm=TRUE))*10)
+data_wide_clean$daytime_sleep_hours <- ((rowSums(data_wide_clean[, c(51:102)], na.rm=TRUE))*10)/60
+
+summary(data_wide_clean$daytime_sleep_minutes)
+summary(data_wide_clean$daytime_sleep_hours)
+
+table(data_wide_clean$daytime_sleep_minutes)
+
+#Illustration of sleep per day
+table(data_wide_clean$daytime_sleep_hours, data_wide_clean$FCTUDWEEKDAY) 
+tab <- with(data_wide_clean, table(daytime_sleep_hours, FCTUDWEEKDAY))
+prop.table(tab, 1)*100 #percentage of participants who report a specific amount of sleep per day
+
+
+#----------------------------------------------------------------------------------------------------------------
+
+
+#Calculate nighttime sleep time per participant, per day (nighttime = 20.10 to 11.20 --> columns 6:50 and 103:149 in the wide dataset)
+
+data_wide_clean$nighttime_sleep_minutes <- ((rowSums(data_wide_clean[, c(6:50, 103:149)], na.rm=TRUE))*10)
+data_wide_clean$nighttime_sleep_hours <- ((rowSums(data_wide_clean[, c(6:50, 103:149)], na.rm=TRUE))*10)/60
+
+summary(data_wide_clean$nighttime_sleep_minutes)
+summary(data_wide_clean$nighttime_sleep_hours)
+
+table(data_wide_clean$nighttime_sleep_minutes)
+
+#Illustration of sleep per day
+table(data_wide_clean$nighttime_sleep_hours, data_wide_clean$FCTUDWEEKDAY) 
+tab2 <- with(data_wide_clean, table(nighttime_sleep_hours, FCTUDWEEKDAY))
+prop.table(tab2, 1)*100 #percentage of participants who report a specific amount of sleep per day
+
+
+#----------------------------------------------------------------------------------------------------------------
+
+#Choosing only night-time hours (for the purpose of subsequent analyses defined as 8.10pm to 5.30am)
+
+install.packages("dplyr")
+library(dplyr)
+
+nighttime <- data_wide_clean[, c(103:149, 6:15)]
+
+#Choosing only day-time hours (for the purpose of subsequent analysis defined as 9am to 7pm)
+#Even though these two time periods are not including all reported time slots, choosing these time slots was necessary for the conceptualisation of naps and awakening to have smaller/stricter boundaries for the definition of nighttime and daytime
+
+daytime <- data_wide_clean[, c(36:96)]
+
+
+#----------------------------------------------------------------------------------------------------------------
+#Counting how many times participants woke up and fell back asleep again during the nighttime (8.10pm to 5.30am)
+
+nighttime2 <- nighttime
+nighttime2$falling_asleep <- 0  # Initialize count of 0 to 1 changes
+nighttime2$waking_up <- 0  # Initialize count of 1 to 0 changes
+
+# Iterate over each participant row
+for (i in 1:nrow(nighttime2)) {
+  # Initialize variables
+  falling_asleep_count <- 0
+  waking_up_count <- 0
+  last_non_missing_value <- NA
+  
+  # Iterate over each time period in the row (columns 1 to 57)
+  for (j in 1:57) {
+    # Non-missing value, update last_non_missing_value
+    if (!is.na(last_non_missing_value)) {
+      if (last_non_missing_value == 0 && nighttime2[i, j] == 1) {
+        falling_asleep_count <- falling_asleep_count + 1
+      }
+      if (last_non_missing_value == 1 && nighttime2[i, j] == 0) {
+        waking_up_count <- waking_up_count + 1
+      }
+    }
+    
+    last_non_missing_value <- nighttime2[i, j]
+  }
+  
+  # Assign the counts to the corresponding row in the new variables
+  nighttime2[i, "falling_asleep"] <- falling_asleep_count
+  nighttime2[i, "waking_up"] <- waking_up_count
+}
+
+#----------------------------------------------------------------------------------------------------------------
+#Counting how many times participants woke up and fell back asleep again during the daytime (9am to 7pm)
+
+daytime2 <- daytime
+daytime2$falling_asleep <- 0  # Initialize count of 0 to 1 changes
+daytime2$waking_up <- 0  # Initialize count of 1 to 0 changes
+
+# Iterate over each participant row
+for (i in 1:nrow(daytime2)) {
+  # Initialize variables
+  falling_asleep_count <- 0
+  waking_up_count <- 0
+  last_non_missing_value <- NA
+  
+  # Iterate over each time period in the row (all columns)
+  for (j in 1:ncol(daytime2)) {
+    # Non-missing value, update last_non_missing_value
+    if (!is.na(last_non_missing_value)) {
+      if (last_non_missing_value == 0 && daytime2[i, j] == 1) {
+        falling_asleep_count <- falling_asleep_count + 1
+      } else if (last_non_missing_value == 1 && daytime2[i, j] == 0) {
+        waking_up_count <- waking_up_count + 1
+      }
+    }
+    
+    last_non_missing_value <- daytime2[i, j]
+  }
+  
+  # Assign the counts to the corresponding row in the new variables
+  daytime2[i, "falling_asleep"] <- falling_asleep_count
+  daytime2[i, "waking_up"] <- waking_up_count
+}
+
+#----------------------------------------------------------------------------------------------------------------
+
+#How many naps did each participant take? (nap = during daytime at least awake for 60min before falling asleep)
+
+# Create a new column to store the nap count
+daytime$nap_count <- 0
+
+# Iterate over each participant row
+for (i in 1:nrow(daytime)) {
+  # Initialize variables
+  consecutive_zeros <- 0
+  nap_count <- 0
+  
+  # Iterate over each time period in the row
+  for (j in 1:ncol(daytime)) {
+    # Check if the value is a zero (awake)
+    if (daytime[i, j] == 0) {
+      consecutive_zeros <- consecutive_zeros + 1
+      
+      # Check if at least six consecutive zeros have occurred
+      if (consecutive_zeros >= 6) {
+        # Search for the next non-zero value (asleep)
+        next_value <- NA
+        k <- j + 1
+        while (is.na(next_value) && k <= ncol(daytime)) {
+          if (daytime[i, k] != 0) {
+            next_value <- daytime[i, k]
+          }
+          k <- k + 1
+        }
+        
+        # Check if the next non-zero value is a one (asleep)
+        if (!is.na(next_value) && next_value == 1) {
+          nap_count <- nap_count + 1
+          consecutive_zeros <- 0  # Reset consecutive_zeros to start counting again
+        }
+      }
+    } else {
+      consecutive_zeros <- 0
+    }
+  }
+  
+  # Assign the nap count to the corresponding row in the new column
+  daytime$nap_count[i] <- nap_count
+}
+
+
+#Overview of daytime naps
+table(daytime$nap_count)
+
+#Adding variables of waking up and falling asleep to the dataset
+daytime$falling_asleep <- daytime2$falling_asleep 
+daytime$waking_up <- daytime2$waking_up
+
+nighttime$falling_asleep <- nighttime2$falling_asleep 
+nighttime$waking_up <- nighttime2$waking_up
+
+
+#Create a daytime nap variable (yes=1, no=0)
+daytime$daytime_nap <- ifelse(daytime$nap_count >= 1 & daytime$falling_asleep >= 1 & daytime$waking_up >= 1, 1, 0)
+
+#----------------------------------------------------------------------------------------------------------------
+
+#Adding all three variables (daytime naps, waking up during day and falling asleep during day to the original wide dataset)
+
+data_wide_clean$nighttime_falling_asleep <- nighttime$falling_asleep 
+data_wide_clean$nighttime_waking_up <- nighttime$waking_up
+data_wide_clean$nap_count <- daytime$nap_count
+data_wide_clean$daytime_falling_asleep <- daytime$falling_asleep
+data_wide_clean$daytime_waking_up <- daytime$waking_up
+data_wide_clean$daytime_nap <- daytime$daytime_nap
+data_wide_clean$night_awakening <- ifelse(data_wide_clean$nighttime_waking_up >= 1, 1, 0)
+
+#----------------------------------------------------------------------------------------------------------------
+
+#Create dummy variable to illustrate weekday or weekend day
+
+data_wide_clean$day <- ifelse(data_wide_clean$FCTUDWEEKDAY> 1 & data_wide_clean$FCTUDWEEKDAY< 7, 1, 0)
+
+#Move the column 
+
+data_wide_clean_2 <- data_wide_clean %>%
+  relocate(160, .after = 3)
+
+sum(duplicated(data_wide_clean_2$MCSID)) #3055 complete case diaries for two days 
+
+#----------------------------------------------------------------------------------------------------------------
+
+#Subset all TUD who are available on both days 
+
+TUD_final <- data_wide_clean_2[duplicated(data_wide_clean_2$MCSID) | duplicated(data_wide_clean_2$MCSID, fromLast = TRUE), ]
+
+#----------------------------------------------------------------------------------------------------------------
+
+#Reshape the dataset to wide format (to create variables for both weekday and weekend)
+
+TUD_final$day2 <- ifelse(TUD_final$day == 1 & TUD_final$day == 0, 'weekday', 'weekend') 
+
+TUD_final_wide <-reshape(TUD_final,
+                         timevar = 'day', #Focus on information availability
+                         idvar =  c('MCSID', 'FCNUM00'),
+                         direction = 'wide')
+
+#----------------------------------------------------------------------------------------------------------------
+
+#Creating a relevant dataset with variables names changed for ease
+
+TUD_final_wide$weekday  <- TUD_final_wide$FCTUDWEEKDAY.1
+TUD_final_wide$weekendday <- TUD_final_wide$FCTUDWEEKDAY.0
+TUD_final_wide$month <- TUD_final_wide$FCTUDMONTH.1
+TUD_final_wide$type <- TUD_final_wide$FCTUDMOD.1
+TUD_final_wide$sleep_h_week <- TUD_final_wide$h_sleep.1
+TUD_final_wide$sleep_h_weekend <- TUD_final_wide$h_sleep.0
+TUD_final_wide$daytime_nap_week <- TUD_final_wide$daytime_nap.1
+TUD_final_wide$daytime_nap_weekend <- TUD_final_wide$daytime_nap.0
+TUD_final_wide$night_awakening_week <- TUD_final_wide$night_awakening.1
+TUD_final_wide$night_awakening_weekend <- TUD_final_wide$night_awakening.0
+
+#Selecting the final sample 
+
+TUD_final_wide_final <-
+  TUD_final_wide[c("MCSID", "FCNUM00", "weekday", "weekendday", "month", "type", "sleep_h_week", "sleep_h_weekend", 
+                   "daytime_nap_week", "daytime_nap_weekend", "night_awakening_week", "night_awakening_weekend")]
+
