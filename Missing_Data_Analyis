@@ -1,0 +1,251 @@
+Please read the data preparation files on how to read in relevant data and how to create the final dataset
+
+#------------------------------------------------------------------------------------------
+
+#Load relevant packages
+
+install.packages("NHANES") 
+library(NHANES) 
+library(dplyr) 
+library(naniar) 
+
+#------------------------------------------------------------------------------------------
+
+#Item-level missingness
+
+final$overweight_perception <- final$FCWEGT00
+final$weight_loss_intention <- final$FCLSWT00
+final$excessive_exercise <- final$FCEXWT00
+final$dietary_restriction <- final$FCETLS00
+
+final$overweight_perception_7 <- final$GCWEGT00
+final$weight_loss_intention_7 <- final$GCLSWT00
+final$excessive_exercise_7 <- final$GCEXWT00
+final$dietary_restriction_7 <- final$GCETLS00
+
+#Select relevant variables 
+
+myvars <- c("overweight_perception", "weight_loss_intention", "excessive_exercise", "dietary_restriction")
+final_relevant <- final[myvars]
+
+myvars_without_overweight_perception <- c("weight_loss_intention", "excessive_exercise", "dietary_restriction")
+final_relevant_without_overweight_perception <- final[myvars_without_overweight_perception]
+
+myvars2 <- c("overweight_perception_7", "weight_loss_intention_7", "excessive_exercise_7", "dietary_restriction_7")
+final_relevant2 <- final[myvars2]
+
+myvars2_without_overweight_perception <- c("weight_loss_intention_7", "excessive_exercise_7", "dietary_restriction_7")
+final_relevant2_without_overweight_perception <- final[myvars2_without_overweight_perception]
+
+#------------------------------------------------------------------------------------------
+
+# Get number of missings per variable (n and %) 
+
+miss_var_summary(final_relevant) 
+miss_var_table(final_relevant) 
+
+# Get number of missings per participant (n and %) 
+
+miss_case_summary(final_relevant) 
+miss_case_table(final_relevant) 
+
+# Which variables contain the most missing variables? 
+
+gg_miss_var(final_relevant) 
+
+# Which combinations of variables occur to be missing together? 
+
+gg_miss_upset(final_relevant) 
+
+#------------------------------------------------------------------------------------------
+
+
+# Get number of missings per variable (n and %) 
+
+miss_var_summary(final_relevant2) 
+miss_var_table(final_relevant2) 
+
+# Get number of missings per participant (n and %) 
+
+miss_case_summary(final_relevant2) 
+miss_case_table(final_relevant2) 
+
+# Which variables contain the most missing variables? 
+
+gg_miss_var(final_relevant2) 
+
+# Which combinations of variables occur to be missing together? 
+
+gg_miss_upset(final_relevant2) 
+
+#------------------------------------------------------------------------------------------
+
+#Creating missing data dummy variable to investigate patterns of missingness
+
+final$missingness_overweight_perception <- ifelse(is.na(final$overweight_perception), 1, 0)
+final$missingness_weight_loss_intention <- ifelse(is.na(final$weight_loss_intention), 1, 0)
+final$missingness_excessive_exercise <- ifelse(is.na(final$excessive_exercise), 1, 0)
+final$missingness_dietary_restriction <- ifelse(is.na(final$dietary_restriction), 1, 0)
+
+final$missingness_overweight_perception_7 <- ifelse(is.na(final$overweight_perception_7), 1, 0)
+final$missingness_weight_loss_intention_7 <- ifelse(is.na(final$weight_loss_intention_7), 1, 0)
+final$missingness_excessive_exercise_7 <- ifelse(is.na(final$excessive_exercise_7), 1, 0)
+final$missingness_dietary_restriction_7 <- ifelse(is.na(final$dietary_restriction_7), 1, 0)
+
+#------------------------------------------------------------------------------------------
+
+#Investigating Little's MAR test 
+
+mcar_test(final_relevant)#p=.04 (significant)
+mcar_test(final_relevant_without_overweight_perception)#n.s.
+mcar_test(final_relevant2)#n.s. 
+mcar_test(final_relevant2_without_overweight_perception)#n.s.
+
+#------------------------------------------------------------------------------------------
+
+#Investigating missingness patterns 
+
+#Predicting missingness using multiple predictors (income, sex, BMI, and ethnicity)
+
+missingness1 <- glm(missingness_overweight_perception~FOECDSC0 + FCUK90O6 + sex + ethnicity, data=final, family="binomial"(link="logit")) 
+summary(missingness1)
+exp(cbind(Odds_Ratio = coef(missingness1), confint(missingness1)))
+
+missingness2 <- glm(missingness_weight_loss_intention~FOECDSC0 + FCUK90O6 + sex + ethnicity, data=final, family="binomial"(link="logit")) 
+summary(missingness2)
+exp(cbind(Odds_Ratio = coef(missingness2), confint(missingness2)))
+
+missingness3 <- glm(missingness_excessive_exercise~FOECDSC0 + FCUK90O6 + sex + ethnicity, data=final, family="binomial"(link="logit")) 
+summary(missingness3)
+exp(cbind(Odds_Ratio = coef(missingness3), confint(missingness3)))
+
+missingness4 <- glm(missingness_dietary_restriction~FOECDSC0 + FCUK90O6 + sex + ethnicity, data=final, family="binomial"(link="logit")) 
+summary(missingness4)
+exp(cbind(Odds_Ratio = coef(missingness4), confint(missingness4)))
+
+missingness5 <- glm(missingness_overweight_perception_7~FOECDSC0 + FCUK90O6 + sex + ethnicity, data=final, family="binomial"(link="logit")) 
+summary(missingness5)
+exp(cbind(Odds_Ratio = coef(missingness5), confint(missingness5)))
+
+missingness6 <- glm(missingness_weight_loss_intention_7~FOECDSC0 + FCUK90O6 + sex + ethnicity, data=final, family="binomial"(link="logit")) 
+summary(missingness6)
+exp(cbind(Odds_Ratio = coef(missingness6), confint(missingness6)))
+
+missingness7 <- glm(missingness_excessive_exercise_7~FOECDSC0 + FCUK90O6 + sex + ethnicity, data=final, family="binomial"(link="logit")) 
+summary(missingness7)
+exp(cbind(Odds_Ratio = coef(missingness7), confint(missingness7)))
+
+missingness8 <- glm(missingness_dietary_restriction_7~FOECDSC0 + FCUK90O6 + sex + ethnicity, data=final, family="binomial"(link="logit")) 
+summary(missingness8)
+exp(cbind(Odds_Ratio = coef(missingness8), confint(missingness8)))
+
+
+#------------------------------------------------------------------------------------------
+
+#Missing Data Short Mood and Feeling Questionnaire 
+
+library(dplyr)
+
+depression_columns <- c("FCMDSA00", "FCMDSB00", "FCMDSC00", "FCMDSD00", "FCMDSE00", 
+                        "FCMDSF00", "FCMDSG00", "FCMDSH00", "FCMDSI00", "FCMDSJ00", 
+                        "FCMDSK00", "FCMDSL00", "FCMDSM00")
+for (col in depression_columns) {
+  final_analysis[[col]][final_analysis[[col]] == 1] <- 0
+  final_analysis[[col]][final_analysis[[col]] == 2] <- 1
+  final_analysis[[col]][final_analysis[[col]] == 3] <- 2
+}
+
+
+#Calculating missingness for depression sum score
+
+
+final_analysis <- final_analysis %>%
+  mutate(missingness_depression = ifelse((is.na(FCMDSA00)) & (is.na(FCMDSB00)) & (is.na(FCMDSC00)) & (is.na(FCMDSD00)) & (is.na(FCMDSE00)) & (is.na (FCMDSF00)) & (is.na(FCMDSG00)) & (is.na(FCMDSH00)) & (is.na(FCMDSI00)) & (is.na(FCMDSJ00)) & (is.na(FCMDSK00)) & (is.na(FCMDSL00)) & (is.na(FCMDSM00)), 1, 0))
+
+#only n=2 missing all variables
+
+#Summary of missing data on the SMFQ items
+
+final_analysis %>%
+  rowwise() %>%
+  mutate(missing_items = sum(is.na(c(FCMDSA00, FCMDSB00, FCMDSC00, FCMDSD00, FCMDSE00, 
+                                     FCMDSF00, FCMDSG00, FCMDSH00, FCMDSI00, FCMDSJ00, 
+                                     FCMDSK00, FCMDSL00, FCMDSM00)))) %>%
+  group_by(missing_items) %>%
+  count() %>%
+  arrange(missing_items) %>%
+  head()
+
+#The same for the TUD subsample 
+
+final_analysis_TUD %>%
+  rowwise() %>%
+  mutate(missing_items = sum(is.na(c(FCMDSA00, FCMDSB00, FCMDSC00, FCMDSD00, FCMDSE00, 
+                                     FCMDSF00, FCMDSG00, FCMDSH00, FCMDSI00, FCMDSJ00, 
+                                     FCMDSK00, FCMDSL00, FCMDSM00)))) %>%
+  group_by(missing_items) %>%
+  count() %>%
+  arrange(missing_items) %>%
+  head()
+
+#Create a missingness variable
+
+final_analysis <- final_analysis %>%
+  rowwise() %>%
+  mutate(missingness_SMFQ_items = sum(is.na(c(FCMDSA00, FCMDSB00, FCMDSC00, FCMDSD00, FCMDSE00, 
+                                     FCMDSF00, FCMDSG00, FCMDSH00, FCMDSI00, FCMDSJ00, 
+                                     FCMDSK00, FCMDSL00, FCMDSM00))),
+         missingness_SMFQ = ifelse(missingness_SMFQ_items > 0, 1, 0))
+
+missingnessSMFQ <- glm(missingness_SMFQ~income + sex + ethnicity + BMI, data=final_analysis, family="binomial"(link="logit")) 
+summary(missingnessSMFQ)
+exp(cbind(Odds_Ratio = coef(missingnessSMFQ), confint(missingnessSMFQ)))
+
+#-------------------------------------------------------------------------------------
+
+#Item-level missingness
+
+#Select relevant variables 
+
+myvars_3 <- c("FCMDSA00", "FCMDSB00", "FCMDSC00", "FCMDSD00", "FCMDSE00", 
+            "FCMDSF00", "FCMDSG00", "FCMDSH00", "FCMDSI00", "FCMDSJ00", 
+            "FCMDSK00", "FCMDSL00", "FCMDSM00")
+final_relevant_3 <- final_analysis[myvars_3]
+
+
+#Little's MAR test
+
+mcar_test(final_relevant_3)
+
+# Get number of missings per variable (n and %) 
+
+miss_var_summary(final_relevant_3) 
+miss_var_table(final_relevant_3) 
+
+
+# Get number of missings per participant (n and %) 
+
+miss_case_summary(final_relevant_3) 
+miss_case_table(final_relevant_3) 
+
+# Which variables contain the most missing variables? 
+
+gg_miss_var(final_relevant_3) 
+
+# Which combinations of variables occur to be missing together? 
+
+gg_miss_upset(final_relevant_3) 
+
+#-------------------------------------------------------------------------------
+
+#Checking missingness for BMI
+
+final_analysis$missingness_BMI <- ifelse(is.na(final_analysis$BMI), 1, 0)
+
+missingnessBMI <- glm(missingness_BMI~income + sex + ethnicity, data=final_analysis, family="binomial"(link="logit")) 
+summary(missingnessBMI)
+exp(cbind(Odds_Ratio = coef(missingnessBMI), confint(missingnessBMI)))
+
+
+
+
