@@ -1,0 +1,2463 @@
+
+#Correlations for all sleep variables and disordered eating 
+
+#Dataset "final_analysis" used for the general sleep variables, dataset "final_analysis_TUD" used for all time-use sleep data
+
+#Chi-square and phi for all dichotomous-dichotomous relationships
+#Cramer's V and chi-sqare for all categorical associations (max. of one variable dichotomous)
+#Point-biserial for associations between continuous and categorical (only "social jetlag" in the current dataset)
+
+#Install relevant packages
+library(psych)
+library(lessR) 
+library(tidyverse)
+install.packages("confintr")
+library(confintr)
+
+#--------------------------------------------------------------------------
+
+#WASO and sleep latency
+
+# create table of frequency
+table1 <- table(final_analysis$WASO,final_analysis$sleep_latency)
+table1
+
+#Calculate phi
+phi(table1, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$WASO,final_analysis$sleep_latency)
+
+#--------------------------------------------------------------------------
+
+#Weight loss intention and dietary restriction
+
+# create table of frequency
+table2 <- table(final_analysis$weight_loss_intention,final_analysis$dietary_restriction)
+table2
+
+#Calculate phi
+phi(table2, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$weight_loss_intention,final_analysis$dietary_restriction)
+
+#--------------------------------------------------------------------------
+
+#Weight loss intention and excessive exercise
+
+# create table of frequency
+table3 <- table(final_analysis$weight_loss_intention,final_analysis$excessive_exercise)
+table3
+
+#Calculate phi
+phi(table3, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$weight_loss_intention,final_analysis$excessive_exercise)
+
+#--------------------------------------------------------------------------
+
+#Weight loss intention and Weight loss intention (age 17)
+
+# create table of frequency
+table4 <- table(final_analysis$weight_loss_intention,final_analysis$weight_loss_intention_7)
+table4
+
+#Calculate phi
+phi(table4, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$weight_loss_intention,final_analysis$weight_loss_intention_7)
+
+#--------------------------------------------------------------------------
+
+#Weight loss intention and dietary restriction (age 17)
+
+# create table of frequency
+table5 <- table(final_analysis$weight_loss_intention,final_analysis$dietary_restriction_7)
+table5
+
+#Calculate phi
+phi(table5, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$weight_loss_intention,final_analysis$dietary_restriction_7)
+
+#--------------------------------------------------------------------------
+
+#Weight loss intention and excessive exercise (age 17)
+
+# create table of frequency
+table6 <- table(final_analysis$weight_loss_intention,final_analysis$excessive_exercise_7)
+table6
+
+#Calculate phi
+phi(table6, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$weight_loss_intention,final_analysis$excessive_exercise_7)
+
+#--------------------------------------------------------------------------
+
+#Dietary restriction and excessive exercise
+
+# create table of frequency
+table7 <- table(final_analysis$dietary_restriction,final_analysis$excessive_exercise)
+table7
+
+#Calculate phi
+phi(table7, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$dietary_restriction,final_analysis$excessive_exercise)
+
+#--------------------------------------------------------------------------
+
+#Dietary restriction and dietary restriction (age 17)
+
+# create table of frequency
+table8 <- table(final_analysis$dietary_restriction,final_analysis$dietary_restriction_7)
+table8
+
+#Calculate phi
+phi(table8, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$dietary_restriction,final_analysis$dietary_restriction_7)
+
+#--------------------------------------------------------------------------
+
+#Dietary restriction and weight loss intention (age 17)
+
+# create table of frequency
+table9 <- table(final_analysis$dietary_restriction,final_analysis$weight_loss_intention_7)
+table9
+
+#Calculate phi
+phi(table9, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$dietary_restriction,final_analysis$weight_loss_intention_7)
+
+#--------------------------------------------------------------------------
+
+#Dietary restriction and excessive exercise (age 17)
+
+# create table of frequency
+table10 <- table(final_analysis$dietary_restriction,final_analysis$excessive_exercise_7)
+table10
+
+#Calculate phi
+phi(table10, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$dietary_restriction,final_analysis$excessive_exercise_7)
+
+
+#--------------------------------------------------------------------------
+
+#Excessive exercise and excessive exercise (age 17)
+
+# create table of frequency
+table11 <- table(final_analysis$excessive_exercise,final_analysis$excessive_exercise_7)
+table11
+
+#Calculate phi
+phi(table11, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$excessive_exercise,final_analysis$excessive_exercise_7)
+
+#--------------------------------------------------------------------------
+
+#Excessive exercise and dietary restriction (age 17)
+
+# create table of frequency
+table12 <- table(final_analysis$excessive_exercise,final_analysis$dietary_restriction_7)
+table12
+
+#Calculate phi
+phi(table12, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$excessive_exercise,final_analysis$dietary_restriction_7)
+
+#--------------------------------------------------------------------------
+
+#Excessive exercise and weight loss intention (age 17)
+
+# create table of frequency
+table13 <- table(final_analysis$excessive_exercise,final_analysis$weight_loss_intention_7)
+table13
+
+#Calculate phi
+phi(table13, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$excessive_exercise,final_analysis$weight_loss_intention_7)
+
+
+#--------------------------------------------------------------------------
+
+#Excessive exercise (age 17) and weight loss intention (age 17)
+
+# create table of frequency
+table14 <- table(final_analysis$excessive_exercise_7,final_analysis$weight_loss_intention_7)
+table14
+
+#Calculate phi
+phi(table14, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$excessive_exercise_7,final_analysis$weight_loss_intention_7)
+
+#--------------------------------------------------------------------------
+
+#Excessive exercise (age 17) and dietary restriction (age 17)
+
+# create table of frequency
+table15 <- table(final_analysis$excessive_exercise_7,final_analysis$dietary_restriction_7)
+table15
+
+#Calculate phi
+phi(table15, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$excessive_exercise_7,final_analysis$dietary_restriction_7)
+
+
+#--------------------------------------------------------------------------
+
+#Weight loss intention (age 17) and dietary restriction (age 17)
+
+# create table of frequency
+table16 <- table(final_analysis$weight_loss_intention_7,final_analysis$dietary_restriction_7)
+table16
+
+#Calculate phi
+phi(table16, digits = 2)
+
+#Calculate Chi-square
+chisq.test(final_analysis$weight_loss_intention_7,final_analysis$dietary_restriction_7)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration weekend with sleep duration week
+
+cramersv(final_analysis[c("sleep_categories_week", "sleep_categories_weekend")])
+
+table17 <-table(final_analysis$sleep_categories_week, final_analysis$sleep_categories_weekend)
+
+chisq.test(table17)
+
+
+#--------------------------------------------------------------------------
+
+#Sleep duration week with sleep onset latency
+
+cramersv(final_analysis[c("sleep_categories_week", "sleep_latency")])
+
+table18 <-table(final_analysis$sleep_categories_week, final_analysis$sleep_latency)
+
+chisq.test(table18)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration weekend with sleep onset latency
+
+cramersv(final_analysis[c("sleep_categories_weekend", "sleep_latency")])
+
+table19 <-table(final_analysis$sleep_categories_weekend, final_analysis$sleep_latency)
+
+chisq.test(table19)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration week with sleep onset latency
+
+cramersv(final_analysis[c("sleep_categories_week", "WASO")])
+
+table20 <-table(final_analysis$sleep_categories_week, final_analysis$WASO)
+
+chisq.test(table20)
+
+
+#--------------------------------------------------------------------------
+
+#Sleep duration weekend with sleep onset latency
+
+cramersv(final_analysis[c("sleep_categories_weekend", "WASO")])
+
+table21 <-table(final_analysis$sleep_categories_weekend, final_analysis$WASO)
+
+chisq.test(table21)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration week with overall sleep quality (age 17)
+
+cramersv(final_analysis[c("sleep_categories_week", "overall_sleep_quality_7")])
+
+table22 <-table(final_analysis$sleep_categories_week, final_analysis$overall_sleep_quality_7)
+
+chisq.test(table22)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration weekend with overall sleep quality (age 17)
+
+cramersv(final_analysis[c("sleep_categories_weekend", "overall_sleep_quality_7")])
+
+table23 <-table(final_analysis$sleep_categories_weekend, final_analysis$overall_sleep_quality_7)
+
+chisq.test(table23)
+
+
+#--------------------------------------------------------------------------
+
+#Sleep duration week with weight loss intention
+
+cramersv(final_analysis[c("sleep_categories_week", "weight_loss_intention")])
+
+table24 <-table(final_analysis$sleep_categories_week, final_analysis$weight_loss_intention)
+
+chisq.test(table24)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration weekend with weight loss intention
+
+cramersv(final_analysis[c("sleep_categories_weekend", "weight_loss_intention")])
+
+table24 <-table(final_analysis$sleep_categories_weekend, final_analysis$weight_loss_intention)
+
+chisq.test(table24)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration week with dietary restriction
+
+cramersv(final_analysis[c("sleep_categories_week", "dietary_restriction")])
+
+table25 <-table(final_analysis$sleep_categories_week, final_analysis$dietary_restriction)
+
+chisq.test(table25)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration weekend with dietary restriction
+
+cramersv(final_analysis[c("sleep_categories_weekend", "dietary_restriction")])
+
+table26 <-table(final_analysis$sleep_categories_weekend, final_analysis$dietary_restriction)
+
+chisq.test(table26)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration week with excessive exercise
+
+cramersv(final_analysis[c("sleep_categories_week", "excessive_exercise")])
+
+table27 <-table(final_analysis$sleep_categories_week, final_analysis$excessive_exercise)
+
+chisq.test(table27)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration weekend with excessive exercise
+
+cramersv(final_analysis[c("sleep_categories_weekend", "excessive_exercise")])
+
+table28 <-table(final_analysis$sleep_categories_weekend, final_analysis$excessive_exercise)
+
+chisq.test(table28)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration week with weight loss intention (age 17)
+
+cramersv(final_analysis[c("sleep_categories_week", "weight_loss_intention_7")])
+
+table29 <-table(final_analysis$sleep_categories_week, final_analysis$weight_loss_intention_7)
+
+chisq.test(table29)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration weekend with weight loss intention (age 17)
+
+cramersv(final_analysis[c("sleep_categories_weekend", "weight_loss_intention_7")])
+
+table30 <-table(final_analysis$sleep_categories_weekend, final_analysis$weight_loss_intention_7)
+
+chisq.test(table30)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration week with dietary restriction (age 17)
+
+cramersv(final_analysis[c("sleep_categories_week", "dietary_restriction_7")])
+
+table31 <-table(final_analysis$sleep_categories_week, final_analysis$dietary_restriction_7)
+
+chisq.test(table31)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration weekend with dietary restriction (age 17)
+
+cramersv(final_analysis[c("sleep_categories_weekend", "dietary_restriction_7")])
+
+table32 <-table(final_analysis$sleep_categories_weekend, final_analysis$dietary_restriction_7)
+
+chisq.test(table32)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration week with excessive exercise (age 17)
+
+cramersv(final_analysis[c("sleep_categories_week", "excessive_exercise_7")])
+
+table33 <-table(final_analysis$sleep_categories_week, final_analysis$excessive_exercise_7)
+
+chisq.test(table33)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration weekend with excessive exercise (age 17)
+
+cramersv(final_analysis[c("sleep_categories_weekend", "excessive_exercise_7")])
+
+table34 <-table(final_analysis$sleep_categories_weekend, final_analysis$excessive_exercise_7)
+
+chisq.test(table34)
+
+#--------------------------------------------------------------------------
+
+#Sleep onset latency with excessive exercise (age 17)
+
+table35 <-table(final_analysis$sleep_latency, final_analysis$excessive_exercise_7)
+
+chisq.test(table35)
+
+#Calculate phi
+
+phi(table35, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#Sleep onset latency with dietary restriction (age 17)
+
+table36 <-table(final_analysis$sleep_latency, final_analysis$dietary_restriction_7)
+
+chisq.test(table36)
+
+#Calculate phi
+
+phi(table36, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#Sleep onset latency with weight loss intention (age 17)
+
+
+table37 <-table(final_analysis$sleep_latency, final_analysis$weight_loss_intention_7)
+
+chisq.test(table37)
+
+
+#Calculate phi
+
+phi(table37, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#Sleep onset latency with weight loss intention
+
+table38 <-table(final_analysis$sleep_latency, final_analysis$weight_loss_intention)
+
+chisq.test(table38)
+
+#Calculate phi
+
+phi(table38, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#Sleep onset latency with dietary restriction
+
+table39 <-table(final_analysis$sleep_latency, final_analysis$dietary_restriction)
+
+chisq.test(table39)
+
+#Calculate phi
+
+phi(table39, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#Sleep onset latency with excessive exercise
+
+table40 <-table(final_analysis$sleep_latency, final_analysis$excessive_exercise)
+
+chisq.test(table40)
+
+#Calculate phi
+
+phi(table40, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#Sleep onset latency with overall sleep quality (age 17)
+
+cramersv(final_analysis[c("sleep_latency", "overall_sleep_quality_7")])
+
+table41 <-table(final_analysis$sleep_latency, final_analysis$overall_sleep_quality_7)
+
+chisq.test(table41)
+
+#--------------------------------------------------------------------------
+
+#WASO with overall sleep quality (age 17)
+
+cramersv(final_analysis[c("WASO", "overall_sleep_quality_7")])
+
+table42 <-table(final_analysis$WASO, final_analysis$overall_sleep_quality_7)
+
+chisq.test(table42)
+
+#--------------------------------------------------------------------------
+
+#WASO with weight loss intention
+
+table42 <-table(final_analysis$WASO, final_analysis$weight_loss_intention)
+
+chisq.test(table42)
+
+#Calculate phi
+
+phi(table42, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#WASO with dietary restriction
+
+table43 <-table(final_analysis$WASO, final_analysis$dietary_restriction)
+
+chisq.test(table43)
+
+#Calculate phi
+
+phi(table43, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#WASO with excessive exercise
+
+table44 <-table(final_analysis$WASO, final_analysis$excessive_exercise)
+
+chisq.test(table44)
+
+#Calculate phi
+
+phi(table44, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#WASO with excessive exercise (age 17)
+
+table45 <-table(final_analysis$WASO, final_analysis$excessive_exercise_7)
+
+chisq.test(table45)
+
+#Calculate phi
+
+phi(table45, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#WASO with dietary restriction (age 17)
+
+table46 <-table(final_analysis$WASO, final_analysis$dietary_restriction_7)
+
+chisq.test(table46)
+
+#Calculate phi
+
+phi(table46, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#WASO with weight loss intention (age 17)
+
+table47 <-table(final_analysis$WASO, final_analysis$weight_loss_intention_7)
+
+chisq.test(table47)
+
+#Calculate phi
+
+phi(table47, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#Overall sleep quality (age 17) with weight loss intention
+
+cramersv(final_analysis[c("overall_sleep_quality_7", "weight_loss_intention")])
+
+table48 <-table(final_analysis$overall_sleep_quality_7, final_analysis$weight_loss_intention)
+
+chisq.test(table48)
+
+#--------------------------------------------------------------------------
+
+#Overall sleep quality (age 17) with dietary restriction
+
+cramersv(final_analysis[c("overall_sleep_quality_7", "dietary_restriction")])
+
+table49 <-table(final_analysis$overall_sleep_quality_7, final_analysis$dietary_restriction)
+
+chisq.test(table49)
+
+#--------------------------------------------------------------------------
+
+#Overall sleep quality (age 17) with excessive exercise
+
+cramersv(final_analysis[c("overall_sleep_quality_7", "excessive_exercise")])
+
+table50 <-table(final_analysis$overall_sleep_quality_7, final_analysis$excessive_exercise)
+
+chisq.test(table50)
+
+
+#--------------------------------------------------------------------------
+
+#Overall sleep quality (age 17) with weight loss intention (age 17)
+
+cramersv(final_analysis[c("overall_sleep_quality_7", "weight_loss_intention_7")])
+
+table51 <-table(final_analysis$overall_sleep_quality_7, final_analysis$weight_loss_intention_7)
+
+chisq.test(table51)
+
+#--------------------------------------------------------------------------
+
+#Overall sleep quality (age 17) with dietary restriction (age 17)
+
+cramersv(final_analysis[c("overall_sleep_quality_7", "dietary_restriction_7")])
+
+table52 <-table(final_analysis$overall_sleep_quality_7, final_analysis$dietary_restriction_7)
+
+chisq.test(table52)
+
+#--------------------------------------------------------------------------
+
+#Overall sleep quality (age 17) with excessive exercise (age 17)
+
+cramersv(final_analysis[c("overall_sleep_quality_7", "excessive_exercise_7")])
+
+table53 <-table(final_analysis$overall_sleep_quality_7, final_analysis$excessive_exercise_7)
+
+chisq.test(table53)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and sleep duration week
+
+cor.test(final_analysis$social_jetlag, final_analysis$sleep_categories_week)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and sleep duration weekend
+
+cor.test(final_analysis$social_jetlag, final_analysis$sleep_categories_weekend)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and sleep onset latency
+
+cor.test(final_analysis$social_jetlag, final_analysis$sleep_latency)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and WASO
+
+cor.test(final_analysis$social_jetlag, final_analysis$WASO)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and Overall Sleep Quality (age 17)
+
+cor.test(final_analysis$social_jetlag, final_analysis$overall_sleep_quality_7)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and weight loss intention
+
+cor.test(final_analysis$social_jetlag, final_analysis$weight_loss_intention)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and dietary restriction
+
+cor.test(final_analysis$social_jetlag, final_analysis$dietary_restriction)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and excessive exercise
+
+cor.test(final_analysis$social_jetlag, final_analysis$excessive_exercise)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and weight loss intention (age 17)
+
+cor.test(final_analysis$social_jetlag, final_analysis$weight_loss_intention_7)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and dietary restriction (age 17)
+
+cor.test(final_analysis$social_jetlag, final_analysis$dietary_restriction_7)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and excessive exercise (age 17)
+
+cor.test(final_analysis$social_jetlag, final_analysis$excessive_exercise_7)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration (week) with TUD sleep duration (week)
+
+cramersv(final_analysis_TUD[c("sleep_categories_week", "sleep_categories_week_TUD")])
+
+table54 <-table(final_analysis_TUD$sleep_categories_week, final_analysis_TUD$sleep_categories_week_TUD)
+
+chisq.test(table54)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration (weekend) with TUD sleep duration (week)
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend", "sleep_categories_week_TUD")])
+
+table55 <-table(final_analysis_TUD$sleep_categories_weekend, final_analysis_TUD$sleep_categories_week_TUD)
+
+chisq.test(table55)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration (weekend) with TUD sleep duration (weekend)
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend", "sleep_categories_weekend_TUD")])
+
+table56 <-table(final_analysis_TUD$sleep_categories_weekend, final_analysis_TUD$sleep_categories_weekend_TUD)
+
+chisq.test(table56)
+
+#--------------------------------------------------------------------------
+
+#Sleep duration (week) with TUD sleep duration (weekend)
+
+cramersv(final_analysis_TUD[c("sleep_categories_week", "sleep_categories_weekend_TUD")])
+
+table57 <-table(final_analysis_TUD$sleep_categories_week, final_analysis_TUD$sleep_categories_weekend_TUD)
+
+chisq.test(table57)
+
+#--------------------------------------------------------------------------
+
+#TUD sleep duration (week) with sleep onset latency
+
+cramersv(final_analysis_TUD[c("sleep_latency", "sleep_categories_week_TUD")])
+
+table58 <-table(final_analysis_TUD$sleep_latency, final_analysis_TUD$sleep_categories_week_TUD)
+
+chisq.test(table58)
+
+#--------------------------------------------------------------------------
+
+#TUD sleep duration (week) with WASO
+
+cramersv(final_analysis_TUD[c("WASO", "sleep_categories_week_TUD")])
+
+table59 <-table(final_analysis_TUD$WASO, final_analysis_TUD$sleep_categories_week_TUD)
+
+chisq.test(table59)
+
+#--------------------------------------------------------------------------
+
+#TUD sleep duration (weekend) with sleep onset latency
+
+cramersv(final_analysis_TUD[c("sleep_latency", "sleep_categories_weekend_TUD")])
+
+table60 <-table(final_analysis_TUD$sleep_latency, final_analysis_TUD$sleep_categories_weekend_TUD)
+
+chisq.test(table60)
+
+#--------------------------------------------------------------------------
+
+#TUD sleep duration (weekend) with WASO
+
+cramersv(final_analysis_TUD[c("WASO", "sleep_categories_weekend_TUD")])
+
+table61 <-table(final_analysis_TUD$WASO, final_analysis_TUD$sleep_categories_weekend_TUD)
+
+chisq.test(table61)
+
+#--------------------------------------------------------------------------
+
+#TUD sleep duration (week) with Daytime Napping (Week)
+
+cramersv(final_analysis_TUD[c("daytime_nap_week", "sleep_categories_week_TUD")])
+
+table62 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$sleep_categories_week_TUD)
+
+chisq.test(table62)
+
+#--------------------------------------------------------------------------
+
+#TUD sleep duration (weekend) with Daytime Napping (Week)
+
+cramersv(final_analysis_TUD[c("daytime_nap_week", "sleep_categories_weekend_TUD")])
+
+table63 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$sleep_categories_weekend_TUD)
+
+chisq.test(table63)
+
+#--------------------------------------------------------------------------
+
+#TUD sleep duration (weekend) with Daytime Napping (Weekend)
+
+cramersv(final_analysis_TUD[c("daytime_nap_weekend", "sleep_categories_weekend_TUD")])
+
+table64 <-table(final_analysis_TUD$daytime_nap_weekend, final_analysis_TUD$sleep_categories_weekend_TUD)
+
+chisq.test(table64)
+
+#--------------------------------------------------------------------------
+
+#TUD sleep duration (week) with Daytime Napping (Weekend)
+
+cramersv(final_analysis_TUD[c("daytime_nap_weekend", "sleep_categories_week_TUD")])
+
+table65 <-table(final_analysis_TUD$daytime_nap_weekend, final_analysis_TUD$sleep_categories_week_TUD)
+
+chisq.test(table65)
+
+#--------------------------------------------------------------------------
+
+#TUD sleep duration (week) with Night Awakening (Week)
+
+cramersv(final_analysis_TUD[c("night_awakening_week", "sleep_categories_week_TUD")])
+
+table66 <-table(final_analysis_TUD$night_awakening_week, final_analysis_TUD$sleep_categories_week_TUD)
+
+chisq.test(table66)
+
+#--------------------------------------------------------------------------
+
+#TUD sleep duration (weekend) with Night Awakening (Week)
+
+cramersv(final_analysis_TUD[c("night_awakening_week", "sleep_categories_weekend_TUD")])
+
+table67 <-table(final_analysis_TUD$night_awakening_week, final_analysis_TUD$sleep_categories_weekend_TUD)
+
+chisq.test(table67)
+
+#--------------------------------------------------------------------------
+
+#TUD sleep duration (weekend) with Night Awakening (Weekend)
+
+cramersv(final_analysis_TUD[c("night_awakening_weekend", "sleep_categories_weekend_TUD")])
+
+table68 <-table(final_analysis_TUD$night_awakening_weekend, final_analysis_TUD$sleep_categories_weekend_TUD)
+
+chisq.test(table68)
+
+#--------------------------------------------------------------------------
+
+#TUD sleep duration (week) with Night Awakening (Weekend)
+
+cramersv(final_analysis_TUD[c("night_awakening_weekend", "sleep_categories_week_TUD")])
+
+table69 <-table(final_analysis_TUD$night_awakening_weekend, final_analysis_TUD$sleep_categories_week_TUD)
+
+chisq.test(table69)
+
+#--------------------------------------------------------------------------
+
+#sleep duration (week) with Night Awakening (Weekend)
+
+cramersv(final_analysis_TUD[c("night_awakening_weekend", "sleep_categories_week")])
+
+table70 <-table(final_analysis_TUD$night_awakening_weekend, final_analysis_TUD$sleep_categories_week)
+
+chisq.test(table70)
+
+#--------------------------------------------------------------------------
+
+#sleep duration (weekend) with Night Awakening (Weekend)
+
+cramersv(final_analysis_TUD[c("night_awakening_weekend", "sleep_categories_weekend")])
+
+table71 <-table(final_analysis_TUD$night_awakening_weekend, final_analysis_TUD$sleep_categories_weekend)
+
+chisq.test(table71)
+
+#--------------------------------------------------------------------------
+
+#sleep duration (weekend) with Night Awakening (Week)
+
+cramersv(final_analysis_TUD[c("night_awakening_week", "sleep_categories_weekend")])
+
+table72 <-table(final_analysis_TUD$night_awakening_week, final_analysis_TUD$sleep_categories_weekend)
+
+chisq.test(table72)
+
+#--------------------------------------------------------------------------
+
+#sleep duration (week) with Night Awakening (Week)
+
+cramersv(final_analysis_TUD[c("night_awakening_week", "sleep_categories_week")])
+
+table73 <-table(final_analysis_TUD$night_awakening_week, final_analysis_TUD$sleep_categories_week)
+
+chisq.test(table73)
+
+#--------------------------------------------------------------------------
+
+#sleep duration (week) with Daytime Napping (Week)
+
+cramersv(final_analysis_TUD[c("daytime_nap_week", "sleep_categories_week")])
+
+table74 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$sleep_categories_week)
+
+chisq.test(table74)
+
+#--------------------------------------------------------------------------
+
+#sleep duration (weekend) with Daytime Napping (Week)
+
+cramersv(final_analysis_TUD[c("daytime_nap_week", "sleep_categories_weekend")])
+
+table75 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$sleep_categories_weekend)
+
+chisq.test(table75)
+
+#--------------------------------------------------------------------------
+
+#sleep duration (weekend) with Daytime Napping (Weekend)
+
+cramersv(final_analysis_TUD[c("daytime_nap_weekend", "sleep_categories_weekend")])
+
+table76 <-table(final_analysis_TUD$daytime_nap_weekend, final_analysis_TUD$sleep_categories_weekend)
+
+chisq.test(table76)
+
+#--------------------------------------------------------------------------
+
+#sleep duration (week) with Daytime Napping (Weekend)
+
+cramersv(final_analysis_TUD[c("daytime_nap_week", "sleep_categories_weekend")])
+
+table77 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$sleep_categories_weekend)
+
+chisq.test(table77)
+
+#--------------------------------------------------------------------------
+
+#WASO with TUD Daytime Napping (Week)
+
+table78 <-table(final_analysis_TUD$WASO, final_analysis_TUD$daytime_nap_week)
+
+chisq.test(table78)
+
+#Calculate phi
+
+phi(table78, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#WASO with TUD Daytime Napping (Weekend)
+
+table79 <-table(final_analysis_TUD$WASO, final_analysis_TUD$daytime_nap_weekend)
+
+chisq.test(table79)
+
+#Calculate phi
+
+phi(table79, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#WASO with TUD Nighttime Awakening (Week)
+
+table80 <-table(final_analysis_TUD$WASO, final_analysis_TUD$night_awakening_week)
+
+chisq.test(table80)
+
+#Calculate phi
+
+phi(table80, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#WASO with TUD Nighttime Awakening (Weekend)
+
+table81 <-table(final_analysis_TUD$WASO, final_analysis_TUD$night_awakening_weekend)
+
+chisq.test(table81)
+
+#Calculate phi
+
+phi(table81, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#Sleep Onset Latency with TUD Nighttime Awakening (Weekend)
+
+table82 <-table(final_analysis_TUD$sleep_latency, final_analysis_TUD$night_awakening_weekend)
+
+chisq.test(table82)
+
+#Calculate phi
+
+phi(table82, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#Sleep Onset Latency with TUD Nighttime Awakening (Week)
+
+table83 <-table(final_analysis_TUD$sleep_latency, final_analysis_TUD$night_awakening_week)
+
+chisq.test(table83)
+
+#Calculate phi
+
+phi(table83, digits = 2)
+
+#--------------------------------------------------------------------------
+
+#Sleep Onset Latency with TUD Daytime Napping (Week)
+
+table84 <-table(final_analysis_TUD$sleep_latency, final_analysis_TUD$daytime_nap_week)
+
+chisq.test(table84)
+
+#Calculate phi
+
+phi(table84, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Sleep Onset Latency with TUD Daytime Napping (Weekend)
+
+table85 <-table(final_analysis_TUD$sleep_latency, final_analysis_TUD$daytime_nap_weekend)
+
+chisq.test(table85)
+
+#Calculate phi
+
+phi(table85, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (week) with TUD Daytime Napping (Weekend)
+
+table86 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$daytime_nap_weekend)
+
+chisq.test(table86)
+
+#Calculate phi
+
+phi(table86, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (week) with TUD Nighttime Awakening (Weekend)
+
+table87 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$night_awakening_weekend)
+
+chisq.test(table87)
+
+#Calculate phi
+
+phi(table87, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (week) with TUD Nighttime Awakening (Week)
+
+table88 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$night_awakening_week)
+
+chisq.test(table88)
+
+#Calculate phi
+
+phi(table88, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (weekend) with TUD Nighttime Awakening (Week)
+
+table89 <-table(final_analysis_TUD$daytime_nap_weekend, final_analysis_TUD$night_awakening_week)
+
+chisq.test(table89)
+
+#Calculate phi
+
+phi(table89, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (weekend) with TUD Nighttime Awakening (Weekend)
+
+table90 <-table(final_analysis_TUD$daytime_nap_weekend, final_analysis_TUD$night_awakening_weekend)
+
+chisq.test(table90)
+
+#Calculate phi
+
+phi(table90, digits = 2)
+
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Napping (week) with TUD Nighttime Awakening (Weekend)
+
+table91 <-table(final_analysis_TUD$night_awakening_week, final_analysis_TUD$night_awakening_weekend)
+
+chisq.test(table91)
+
+#Calculate phi
+
+phi(table91, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD sleep duration (week) with Overall Sleep Quality (age 17)
+
+cramersv(final_analysis_TUD[c("sleep_categories_week_TUD", "overall_sleep_quality_7")])
+
+table92 <-table(final_analysis_TUD$sleep_categories_week_TUD, final_analysis_TUD$overall_sleep_quality_7)
+
+chisq.test(table92)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD sleep duration (weekend) with Overall Sleep Quality (age 17)
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend_TUD", "overall_sleep_quality_7")])
+
+table93 <-table(final_analysis_TUD$sleep_categories_weekend_TUD, final_analysis_TUD$overall_sleep_quality_7)
+
+chisq.test(table93)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (week) with Overall Sleep Quality (age 17)
+
+cramersv(final_analysis_TUD[c("daytime_nap_week", "overall_sleep_quality_7")])
+
+table94 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$overall_sleep_quality_7)
+
+chisq.test(table94)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (weekend) with Overall Sleep Quality (age 17)
+
+cramersv(final_analysis_TUD[c("daytime_nap_weekend", "overall_sleep_quality_7")])
+
+table95 <-table(final_analysis_TUD$daytime_nap_weekend, final_analysis_TUD$overall_sleep_quality_7)
+
+chisq.test(table95)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (week) with Overall Sleep Quality (age 17)
+
+cramersv(final_analysis_TUD[c("night_awakening_week", "overall_sleep_quality_7")])
+
+table96 <-table(final_analysis_TUD$night_awakening_week, final_analysis_TUD$overall_sleep_quality_7)
+
+chisq.test(table96)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (weekend) with Overall Sleep Quality (age 17)
+
+cramersv(final_analysis_TUD[c("night_awakening_weekend", "overall_sleep_quality_7")])
+
+table97 <-table(final_analysis_TUD$night_awakening_weekend, final_analysis_TUD$overall_sleep_quality_7)
+
+chisq.test(table97)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (week) with TUD Sleep Duration (weekend)
+
+cramersv(final_analysis_TUD[c("sleep_categories_week_TUD", "sleep_categories_weekend_TUD")])
+
+table98 <-table(final_analysis_TUD$sleep_categories_week_TUD, final_analysis_TUD$sleep_categories_weekend_TUD)
+
+chisq.test(table98)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and Overall TUD Sleep Duration (Week)
+
+cor.test(final_analysis_TUD$social_jetlag, final_analysis_TUD$sleep_categories_week_TUD)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and Overall TUD Sleep Duration (Weekend)
+
+cor.test(final_analysis_TUD$social_jetlag, final_analysis_TUD$sleep_categories_weekend_TUD)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and Overall TUD Daytime Napping (Week)
+
+cor.test(final_analysis_TUD$social_jetlag, final_analysis_TUD$daytime_nap_week)
+
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and Overall TUD Daytime Napping (Weekend)
+
+cor.test(final_analysis_TUD$social_jetlag, final_analysis_TUD$daytime_nap_weekend)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and Overall TUD Nighttime Awakening (Week)
+
+cor.test(final_analysis_TUD$social_jetlag, final_analysis_TUD$night_awakening_week)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and Overall TUD Nighttime Awakening (Weekend)
+
+cor.test(final_analysis_TUD$social_jetlag, final_analysis_TUD$night_awakening_weekend)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (week) with Weight Loss Intention
+
+cramersv(final_analysis_TUD[c("sleep_categories_week_TUD", "weight_loss_intention")])
+
+table99 <-table(final_analysis_TUD$sleep_categories_week_TUD, final_analysis_TUD$weight_loss_intention)
+
+chisq.test(table99)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (week) with Dietary Restriction
+
+cramersv(final_analysis_TUD[c("sleep_categories_week_TUD", "dietary_restriction")])
+
+table100 <-table(final_analysis_TUD$sleep_categories_week_TUD, final_analysis_TUD$dietary_restriction)
+
+chisq.test(table100)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (week) with Excessive Exercise
+
+cramersv(final_analysis_TUD[c("sleep_categories_week_TUD", "excessive_exercise")])
+
+table101 <-table(final_analysis_TUD$sleep_categories_week_TUD, final_analysis_TUD$excessive_exercise)
+
+chisq.test(table101)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (week) with Weight Loss Intention (age 17)
+
+cramersv(final_analysis_TUD[c("sleep_categories_week_TUD", "weight_loss_intention_7")])
+
+table102 <-table(final_analysis_TUD$sleep_categories_week_TUD, final_analysis_TUD$weight_loss_intention_7)
+
+chisq.test(table102)
+
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (week) with Dietary Restriction (age 17)
+
+cramersv(final_analysis_TUD[c("sleep_categories_week_TUD", "dietary_restriction_7")])
+
+table103 <-table(final_analysis_TUD$sleep_categories_week_TUD, final_analysis_TUD$dietary_restriction_7)
+
+chisq.test(table103)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (week) with Excessive Exercise (age 17)
+
+cramersv(final_analysis_TUD[c("sleep_categories_week_TUD", "excessive_exercise_7")])
+
+table104 <-table(final_analysis_TUD$sleep_categories_week_TUD, final_analysis_TUD$excessive_exercise_7)
+
+chisq.test(table104)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (weekend) with Excessive Exercise (age 17)
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend_TUD", "excessive_exercise_7")])
+
+table105 <-table(final_analysis_TUD$sleep_categories_weekend_TUD, final_analysis_TUD$excessive_exercise_7)
+
+chisq.test(table105)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (weekend) with Dietary Restriction (age 17)
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend_TUD", "dietary_restriction_7")])
+
+table106 <-table(final_analysis_TUD$sleep_categories_weekend_TUD, final_analysis_TUD$dietary_restriction_7)
+
+chisq.test(table106)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (weekend) with Weight Loss Intention (age 17)
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend_TUD", "weight_loss_intention_7")])
+
+table107 <-table(final_analysis_TUD$sleep_categories_weekend_TUD, final_analysis_TUD$weight_loss_intention_7)
+
+chisq.test(table107)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (weekend) with Excessive Exercise
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend_TUD", "excessive_exercise")])
+
+table108 <-table(final_analysis_TUD$sleep_categories_weekend_TUD, final_analysis_TUD$excessive_exercise)
+
+chisq.test(table108)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (weekend) with Dietary Restriction
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend_TUD", "dietary_restriction")])
+
+table109 <-table(final_analysis_TUD$sleep_categories_weekend_TUD, final_analysis_TUD$dietary_restriction)
+
+chisq.test(table109)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Sleep Duration (weekend) with Weight Loss Intention
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend_TUD", "weight_loss_intention")])
+
+table110 <-table(final_analysis_TUD$sleep_categories_weekend_TUD, final_analysis_TUD$weight_loss_intention)
+
+chisq.test(table110)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (week) with Weight Loss Intention
+
+table111 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$weight_loss_intention)
+
+chisq.test(table111)
+
+#Calculate phi
+
+phi(table111, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (week) with Dietary Restriction
+
+table112 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$dietary_restriction)
+
+chisq.test(table112)
+
+#Calculate phi
+
+phi(table112, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (week) with Excessive Exercise
+
+table113 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$excessive_exercise)
+
+chisq.test(table113)
+
+#Calculate phi
+
+phi(table113, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (week) with Weight Loss Intention (age 17)
+
+table114 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$weight_loss_intention_7)
+
+chisq.test(table114)
+
+#Calculate phi
+
+phi(table114, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (week) with Dietary Restriction (age 17)
+
+table115 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$dietary_restriction_7)
+
+chisq.test(table115)
+
+#Calculate phi
+
+phi(table115, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (week) with Excessive Exercise (age 17)
+
+table116 <-table(final_analysis_TUD$daytime_nap_week, final_analysis_TUD$excessive_exercise_7)
+
+chisq.test(table116)
+
+#Calculate phi
+
+phi(table116, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (weekend) with Excessive Exercise (age 17)
+
+table117 <-table(final_analysis_TUD$daytime_nap_weekend, final_analysis_TUD$excessive_exercise_7)
+
+chisq.test(table117)
+
+#Calculate phi
+
+phi(table117, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (weekend) with Dietary Restriction (age 17)
+
+table118 <-table(final_analysis_TUD$daytime_nap_weekend, final_analysis_TUD$dietary_restriction_7)
+
+chisq.test(table118)
+
+#Calculate phi
+
+phi(table118, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (weekend) with Weight Loss Intention (age 17)
+
+table119 <-table(final_analysis_TUD$daytime_nap_weekend, final_analysis_TUD$weight_loss_intention_7)
+
+chisq.test(table119)
+
+#Calculate phi
+
+phi(table119, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (weekend) with Weight Loss Intention 
+
+table120 <-table(final_analysis_TUD$daytime_nap_weekend, final_analysis_TUD$weight_loss_intention)
+
+chisq.test(table120)
+
+#Calculate phi
+
+phi(table120, digits = 2)
+
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (weekend) with Dietary Restriction
+
+table121 <-table(final_analysis_TUD$daytime_nap_weekend, final_analysis_TUD$dietary_restriction)
+
+chisq.test(table121)
+
+#Calculate phi
+
+phi(table121, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Daytime Napping (weekend) with Excessive Exercise
+
+table122 <-table(final_analysis_TUD$daytime_nap_weekend, final_analysis_TUD$excessive_exercise)
+
+chisq.test(table122)
+
+#Calculate phi
+
+phi(table122, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (Week) with Weight Loss Intention
+
+table123 <-table(final_analysis_TUD$night_awakening_week, final_analysis_TUD$weight_loss_intention)
+
+chisq.test(table123)
+
+#Calculate phi
+
+phi(table123, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (Week) with Dietary Restriction
+
+table124 <-table(final_analysis_TUD$night_awakening_week, final_analysis_TUD$dietary_restriction)
+
+chisq.test(table124)
+
+#Calculate phi
+
+phi(table124, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (Week) with Excessive Exercise
+
+table125 <-table(final_analysis_TUD$night_awakening_week, final_analysis_TUD$excessive_exercise)
+
+chisq.test(table125)
+
+#Calculate phi
+
+phi(table125, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (Week) with Weight loss Intention (age 17)
+
+table126 <-table(final_analysis_TUD$night_awakening_week, final_analysis_TUD$weight_loss_intention_7)
+
+chisq.test(table126)
+
+#Calculate phi
+
+phi(table126, digits = 2)
+
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (Week) with Dietary Restriction (age 17)
+
+table127 <-table(final_analysis_TUD$night_awakening_week, final_analysis_TUD$dietary_restriction_7)
+
+chisq.test(table127)
+
+#Calculate phi
+
+phi(table127, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (Week) with Excessive Exercise (age 17)
+
+table128 <-table(final_analysis_TUD$night_awakening_week, final_analysis_TUD$excessive_exercise_7)
+
+chisq.test(table128)
+
+#Calculate phi
+
+phi(table128, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (Weekend) with Excessive Exercise (age 17)
+
+table129 <-table(final_analysis_TUD$night_awakening_weekend, final_analysis_TUD$excessive_exercise_7)
+
+chisq.test(table129)
+
+#Calculate phi
+
+phi(table129, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (Weekend) with Dietary Restriction (age 17)
+
+table130 <-table(final_analysis_TUD$night_awakening_weekend, final_analysis_TUD$dietary_restriction_7)
+
+chisq.test(table130)
+
+#Calculate phi
+
+phi(table130, digits = 2)
+
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (Weekend) with Weight Loss Intention (age 17)
+
+table131 <-table(final_analysis_TUD$night_awakening_weekend, final_analysis_TUD$weight_loss_intention_7)
+
+chisq.test(table131)
+
+#Calculate phi
+
+phi(table131, digits = 2)
+
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (Weekend) with Weight Loss Intention
+
+table132 <-table(final_analysis_TUD$night_awakening_weekend, final_analysis_TUD$weight_loss_intention)
+
+chisq.test(table132)
+
+#Calculate phi
+
+phi(table132, digits = 2)
+
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (Weekend) with Dietary Restriction
+
+table133 <-table(final_analysis_TUD$night_awakening_weekend, final_analysis_TUD$dietary_restriction)
+
+chisq.test(table133)
+
+#Calculate phi
+
+phi(table133, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#TUD Nighttime Awakening (Weekend) with Excessive Exercise
+
+table134 <-table(final_analysis_TUD$night_awakening_weekend, final_analysis_TUD$excessive_exercise)
+
+chisq.test(table134)
+
+#Calculate phi
+
+phi(table134, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+
+#Sleep Duration (week) with Wake-Up Time (Week)
+
+cramersv(final_analysis[c("sleep_categories_week", "wake_up_week")])
+
+table135 <-table(final_analysis$sleep_categories_week, final_analysis$wake_up_week)
+
+chisq.test(table135)
+
+#-----------------------------------------------------------------------------------------------
+
+
+#Sleep Duration (weekend)  with Wake-Up Time (Week)
+
+cramersv(final_analysis[c("sleep_categories_weekend", "wake_up_week")])
+
+table136 <-table(final_analysis$sleep_categories_weekend, final_analysis$wake_up_week)
+
+chisq.test(table136)
+
+
+#-----------------------------------------------------------------------------------------------
+
+#Overall Sleep Quality with Wake-Up Time (Week)
+
+cramersv(final_analysis[c("overall_sleep_quality_7", "wake_up_week")])
+
+table137 <-table(final_analysis$overall_sleep_quality_7, final_analysis$wake_up_week)
+
+chisq.test(table137)
+
+#-----------------------------------------------------------------------------------------------
+
+#Overall Sleep Quality with Wake-Up Time (Weekend)
+
+cramersv(final_analysis[c("overall_sleep_quality_7", "wake_up_weekend")])
+
+table138 <-table(final_analysis$overall_sleep_quality_7, final_analysis$wake_up_weekend)
+
+chisq.test(table138)
+
+
+#-----------------------------------------------------------------------------------------------
+
+#Sleep Duration (weekend)  with Wake-Up Time (Weekend)
+
+cramersv(final_analysis[c("sleep_categories_weekend", "wake_up_weekend")])
+
+table139 <-table(final_analysis$sleep_categories_weekend, final_analysis$wake_up_weekend)
+
+chisq.test(table139)
+
+#-----------------------------------------------------------------------------------------------
+
+#Sleep Duration (week)  with Wake-Up Time (Weekend)
+
+cramersv(final_analysis[c("sleep_categories_week", "wake_up_weekend")])
+
+table140 <-table(final_analysis$sleep_categories_week, final_analysis$wake_up_weekend)
+
+chisq.test(table140)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake-Up (Week) with Sleep Latency
+
+table141 <-table(final_analysis$wake_up_week, final_analysis$sleep_latency)
+
+chisq.test(table141)
+
+#Calculate phi
+
+phi(table141, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake-Up (Week) with WASO
+
+table142 <-table(final_analysis$wake_up_week, final_analysis$WASO)
+
+chisq.test(table142)
+
+#Calculate phi
+
+phi(table142, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake-Up (Weekend) with WASO
+
+table143 <-table(final_analysis$wake_up_weekend, final_analysis$WASO)
+
+chisq.test(table143)
+
+#Calculate phi
+
+phi(table143, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake-Up (Weekend) with Sleep Onset Latency
+
+table144 <-table(final_analysis$wake_up_weekend, final_analysis$sleep_latency)
+
+chisq.test(table144)
+
+#Calculate phi
+
+phi(table144, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with Sleep Onset Latency
+
+table145 <-table(final_analysis$bed_time_week, final_analysis$sleep_latency)
+
+chisq.test(table145)
+
+#Calculate phi
+
+phi(table145, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with Sleep Onset Latency
+
+table146 <-table(final_analysis$bed_time_weekend, final_analysis$sleep_latency)
+
+chisq.test(table146)
+
+#Calculate phi
+
+phi(table146, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with WASO
+
+table147 <-table(final_analysis$bed_time_week, final_analysis$WASO)
+
+chisq.test(table147)
+
+#Calculate phi
+
+phi(table147, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with WASO
+
+table148 <-table(final_analysis$bed_time_weekend, final_analysis$WASO)
+
+chisq.test(table148)
+
+#Calculate phi
+
+phi(table148, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Sleep Duration (week)  with Bedtime (Week)
+
+cramersv(final_analysis[c("sleep_categories_week", "bed_time_week")])
+
+table149 <-table(final_analysis$sleep_categories_week, final_analysis$bed_time_week)
+
+chisq.test(table149)
+
+#-----------------------------------------------------------------------------------------------
+
+#Sleep Duration (weekend)  with Bedtime (Week)
+
+cramersv(final_analysis[c("sleep_categories_weekend", "bed_time_week")])
+
+table150 <-table(final_analysis$sleep_categories_weekend, final_analysis$bed_time_week)
+
+chisq.test(table150)
+
+#-----------------------------------------------------------------------------------------------
+
+#Sleep Duration (weekend)  with Bedtime (Weekend)
+
+cramersv(final_analysis[c("sleep_categories_weekend", "bed_time_weekend")])
+
+table151 <-table(final_analysis$sleep_categories_weekend, final_analysis$bed_time_weekend)
+
+chisq.test(table151)
+
+#-----------------------------------------------------------------------------------------------
+
+#Sleep Duration (weekend)  with Bedtime (Week)
+
+cramersv(final_analysis[c("sleep_categories_weekend", "bed_time_week")])
+
+table152 <-table(final_analysis$sleep_categories_weekend, final_analysis$bed_time_week)
+
+chisq.test(table152)
+
+#-----------------------------------------------------------------------------------------------
+
+#Overall Sleep Quality  with Bedtime (Week)
+
+cramersv(final_analysis[c("overall_sleep_quality_7", "bed_time_week")])
+
+table153 <-table(final_analysis$overall_sleep_quality_7, final_analysis$bed_time_week)
+
+chisq.test(table153)
+
+#-----------------------------------------------------------------------------------------------
+
+#Overall Sleep Quality  with Bedtime (Weekend)
+
+cramersv(final_analysis[c("overall_sleep_quality_7", "bed_time_weekend")])
+
+table154 <-table(final_analysis$overall_sleep_quality_7, final_analysis$bed_time_weekend)
+
+chisq.test(table154)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and Wake-Up Time (Week)
+
+cor.test(final_analysis$social_jetlag, final_analysis$wake_up_week)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and Wake-Up Time (Weekend)
+
+cor.test(final_analysis$social_jetlag, final_analysis$wake_up_weekend)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and Bedtime (Week)
+
+cor.test(final_analysis$social_jetlag, final_analysis$bed_time_week)
+
+#--------------------------------------------------------------------------
+
+#Social jetlag and Bedtime (Weekend)
+
+cor.test(final_analysis$social_jetlag, final_analysis$bed_time_weekend)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with Weight Loss Intention
+
+table155 <-table(final_analysis$bed_time_week, final_analysis$weight_loss_intention)
+
+chisq.test(table155)
+
+#Calculate phi
+
+phi(table155, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with Dietary Restriction
+
+table156 <-table(final_analysis$bed_time_week, final_analysis$dietary_restriction)
+
+chisq.test(table156)
+
+#Calculate phi
+
+phi(table156, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with Excessive Exercise 
+
+table157 <-table(final_analysis$bed_time_week, final_analysis$excessive_exercise)
+
+chisq.test(table157)
+
+#Calculate phi
+
+phi(table157, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with Weight Loss Intention (age 17)
+
+table158 <-table(final_analysis$bed_time_week, final_analysis$weight_loss_intention_7)
+
+chisq.test(table158)
+
+#Calculate phi
+
+phi(table158, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with Dietary Restriction (age 17)
+
+table159 <-table(final_analysis$bed_time_week, final_analysis$dietary_restriction_7)
+
+chisq.test(table159)
+
+#Calculate phi
+
+phi(table159, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with Excessive Exercise (age 17)
+
+table160 <-table(final_analysis$bed_time_week, final_analysis$excessive_exercise_7)
+
+chisq.test(table160)
+
+#Calculate phi
+
+phi(table160, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with Weight Loss Intention
+
+table161 <-table(final_analysis$bed_time_weekend, final_analysis$weight_loss_intention)
+
+chisq.test(table161)
+
+#Calculate phi
+
+phi(table161, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with Dietary Restriction
+
+table162 <-table(final_analysis$bed_time_weekend, final_analysis$dietary_restriction)
+
+chisq.test(table162)
+
+#Calculate phi
+
+phi(table162, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with Excessive Exercise 
+
+table163 <-table(final_analysis$bed_time_weekend, final_analysis$excessive_exercise)
+
+chisq.test(table163)
+
+#Calculate phi
+
+phi(table163, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with Weight Loss Intention (age 17)
+
+table164 <-table(final_analysis$bed_time_weekend, final_analysis$weight_loss_intention_7)
+
+chisq.test(table164)
+
+#Calculate phi
+
+phi(table164, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with Dietary Restriction (age 17)
+
+table165 <-table(final_analysis$bed_time_weekend, final_analysis$dietary_restriction_7)
+
+chisq.test(table165)
+
+#Calculate phi
+
+phi(table165, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with Excessive Exercise (age 17)
+
+table166 <-table(final_analysis$bed_time_weekend, final_analysis$excessive_exercise_7)
+
+chisq.test(table166)
+
+#Calculate phi
+
+phi(table166, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Week) with Weight Loss Intention
+
+table167 <-table(final_analysis$wake_up_week, final_analysis$weight_loss_intention)
+
+chisq.test(table167)
+
+#Calculate phi
+
+phi(table167, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Week) with Dietary Restriction
+
+table168 <-table(final_analysis$wake_up_week, final_analysis$dietary_restriction)
+
+chisq.test(table168)
+
+#Calculate phi
+
+phi(table168, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Week) with Excessive Exercise 
+
+table169 <-table(final_analysis$wake_up_week, final_analysis$excessive_exercise)
+
+chisq.test(table169)
+
+#Calculate phi
+
+phi(table169, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Week) with Weight Loss Intention (age 17)
+
+table170 <-table(final_analysis$wake_up_week, final_analysis$weight_loss_intention_7)
+
+chisq.test(table170)
+
+#Calculate phi
+
+phi(table170, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Week) with Dietary Restriction (age 17)
+
+table171 <-table(final_analysis$wake_up_week, final_analysis$dietary_restriction_7)
+
+chisq.test(table171)
+
+#Calculate phi
+
+phi(table171, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Week) with Excessive Exercise (age 17)
+
+table172 <-table(final_analysis$wake_up_week, final_analysis$excessive_exercise_7)
+
+chisq.test(table172)
+
+#Calculate phi
+
+phi(table172, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Weekend) with Weight Loss Intention
+
+table173 <-table(final_analysis$wake_up_weekend, final_analysis$weight_loss_intention)
+
+chisq.test(table173)
+
+#Calculate phi
+
+phi(table173, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Weekend) with Dietary Restriction
+
+table174 <-table(final_analysis$wake_up_weekend, final_analysis$dietary_restriction)
+
+chisq.test(table174)
+
+#Calculate phi
+
+phi(table174, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Weekend) with Excessive Exercise 
+
+table175 <-table(final_analysis$wake_up_weekend, final_analysis$excessive_exercise)
+
+chisq.test(table175)
+
+#Calculate phi
+
+phi(table175, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Weekend) with Weight Loss Intention (age 17)
+
+table176 <-table(final_analysis$wake_up_weekend, final_analysis$weight_loss_intention_7)
+
+chisq.test(table176)
+
+#Calculate phi
+
+phi(table176, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Weekend) with Dietary Restriction (age 17)
+
+table177 <-table(final_analysis$wake_up_weekend, final_analysis$dietary_restriction_7)
+
+chisq.test(table177)
+
+#Calculate phi
+
+phi(table177, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Weekend) with Excessive Exercise (age 17)
+
+table178 <-table(final_analysis$wake_up_weekend, final_analysis$excessive_exercise_7)
+
+chisq.test(table178)
+
+#Calculate phi
+
+phi(table178, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Week) with TUD Sleep Duration (Week)
+
+cramersv(final_analysis_TUD[c("sleep_categories_week_TUD", "wake_up_week")])
+
+table179 <-table(final_analysis_TUD$sleep_categories_week_TUD, final_analysis_TUD$wake_up_week)
+
+chisq.test(table179)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Weekend) with TUD Sleep Duration (Week)
+
+cramersv(final_analysis_TUD[c("sleep_categories_week_TUD", "wake_up_weekend")])
+
+table180 <-table(final_analysis_TUD$sleep_categories_week_TUD, final_analysis_TUD$wake_up_weekend)
+
+chisq.test(table180)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with TUD Sleep Duration (Week)
+
+cramersv(final_analysis_TUD[c("sleep_categories_week_TUD", "bed_time_week")])
+
+table181 <-table(final_analysis_TUD$sleep_categories_week_TUD, final_analysis_TUD$bed_time_week)
+
+chisq.test(table181)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with TUD Sleep Duration (Week)
+
+cramersv(final_analysis_TUD[c("sleep_categories_week_TUD", "bed_time_weekend")])
+
+table182 <-table(final_analysis_TUD$sleep_categories_week_TUD, final_analysis_TUD$bed_time_weekend)
+
+chisq.test(table182)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake-Up Time (Week) with TUD Sleep Duration (Weekend)
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend_TUD", "wake_up_week")])
+
+table183 <-table(final_analysis_TUD$sleep_categories_weekend_TUD, final_analysis_TUD$wake_up_week)
+
+chisq.test(table183)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake-Up Time (Weekend) with TUD Sleep Duration (Weekend)
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend_TUD", "wake_up_weekend")])
+
+table184 <-table(final_analysis_TUD$sleep_categories_weekend_TUD, final_analysis_TUD$wake_up_weekend)
+
+chisq.test(table184)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with TUD Sleep Duration (Week)
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend_TUD", "bed_time_week")])
+
+table185 <-table(final_analysis_TUD$sleep_categories_weekend_TUD, final_analysis_TUD$bed_time_week)
+
+chisq.test(table185)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with TUD Sleep Duration (Week)
+
+cramersv(final_analysis_TUD[c("sleep_categories_weekend_TUD", "bed_time_weekend")])
+
+table186 <-table(final_analysis_TUD$sleep_categories_weekend_TUD, final_analysis_TUD$bed_time_weekend)
+
+chisq.test(table186)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Week) with Daytime Napping (Week)
+
+table187 <-table(final_analysis_TUD$wake_up_week, final_analysis_TUD$daytime_nap_week)
+
+chisq.test(table187)
+
+#Calculate phi
+
+phi(table187, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake Up Time (Weekend) with Daytime Napping (Week)
+
+table188 <-table(final_analysis_TUD$wake_up_weekend, final_analysis_TUD$daytime_nap_week)
+
+chisq.test(table188)
+
+#Calculate phi
+
+phi(table188, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with Daytime Napping (Week)
+
+table189 <-table(final_analysis_TUD$bed_time_week, final_analysis_TUD$daytime_nap_week)
+
+chisq.test(table189)
+
+#Calculate phi
+
+phi(table189, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with Daytime Napping (Week)
+
+table190 <-table(final_analysis_TUD$bed_time_weekend, final_analysis_TUD$daytime_nap_week)
+
+chisq.test(table190)
+
+#Calculate phi
+
+phi(table190, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with Daytime Napping (Weekend)
+
+table191 <-table(final_analysis_TUD$bed_time_weekend, final_analysis_TUD$daytime_nap_weekend)
+
+chisq.test(table191)
+
+#Calculate phi
+
+phi(table191, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with Daytime Napping (Weekend)
+
+table192 <-table(final_analysis_TUD$bed_time_week, final_analysis_TUD$daytime_nap_weekend)
+
+chisq.test(table192)
+
+#Calculate phi
+
+phi(table192, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake-Up Time (Week) with Daytime Napping (Weekend)
+
+table193 <-table(final_analysis_TUD$wake_up_week, final_analysis_TUD$daytime_nap_weekend)
+
+chisq.test(table193)
+
+#Calculate phi
+
+phi(table193, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake-Up Time (Weekend) with Daytime Napping (Weekend)
+
+table194 <-table(final_analysis_TUD$wake_up_weekend, final_analysis_TUD$daytime_nap_weekend)
+
+chisq.test(table194)
+
+#Calculate phi
+
+phi(table194, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake-Up Time (Week) with Night Awakening (Week)
+
+table195 <-table(final_analysis_TUD$wake_up_week, final_analysis_TUD$night_awakening_week)
+
+chisq.test(table195)
+
+#Calculate phi
+
+phi(table195, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake-Up Time (Weekend) with Night Awakening (Week)
+
+table196 <-table(final_analysis_TUD$wake_up_weekend, final_analysis_TUD$night_awakening_week)
+
+chisq.test(table196)
+
+#Calculate phi
+
+phi(table196, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with Night Awakening (Week)
+
+table197 <-table(final_analysis_TUD$bed_time_week, final_analysis_TUD$night_awakening_week)
+
+chisq.test(table197)
+
+#Calculate phi
+
+phi(table197, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with Night Awakening (Week)
+
+table198 <-table(final_analysis_TUD$bed_time_weekend, final_analysis_TUD$night_awakening_week)
+
+chisq.test(table198)
+
+#Calculate phi
+
+phi(table198, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake_up Time (Week) with Night Awakening (Weekend)
+
+table199 <-table(final_analysis_TUD$wake_up_week, final_analysis_TUD$night_awakening_weekend)
+
+chisq.test(table199)
+
+#Calculate phi
+
+phi(table199, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Wake_up Time (Weekend) with Night Awakening (Weekend)
+
+table200 <-table(final_analysis_TUD$wake_up_weekend, final_analysis_TUD$night_awakening_weekend)
+
+chisq.test(table200)
+
+#Calculate phi
+
+phi(table200, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Week) with Night Awakening (Weekend)
+
+table201 <-table(final_analysis_TUD$bed_time_week, final_analysis_TUD$night_awakening_weekend)
+
+chisq.test(table201)
+
+#Calculate phi
+
+phi(table201, digits = 2)
+
+#-----------------------------------------------------------------------------------------------
+
+#Bedtime (Weekend) with Night Awakening (Weekend)
+
+table202 <-table(final_analysis_TUD$bed_time_weekend, final_analysis_TUD$night_awakening_weekend)
+
+chisq.test(table202)
+
+#Calculate phi
+
+phi(table202, digits = 2)
+
