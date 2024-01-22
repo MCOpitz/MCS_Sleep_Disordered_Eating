@@ -1,0 +1,773 @@
+#Please see previous files for reading in data and preparing the dataset(s)
+
+
+library(lavaan)
+library(foreign)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(rmarkdown)
+library(knitr)
+install.packages("mice")
+library(mice)
+install.packages("semTools")
+library(semTools)
+install.packages("sem")
+library(sem)
+library(mitools)
+
+
+#--------------------------------------------------------------------------
+
+#Imputing height and weight (to test if imputing these values will lead to differences in the individual imputed datasets)
+
+df_longitudinal <- final_analysis[c("dietary_restriction", "weight_loss_intention", "excessive_exercise", "dietary_restriction_7", "weight_loss_intention_7", "excessive_exercise_7", "sleep_categories_week", "sleep_categories_weekend", "sleep_latency", "WASO", "social_jetlag", "wake_up_week", "wake_up_weekend", "bed_time_week", "bed_time_weekend", "sex", "income", "ethnicity", "BMI", "height", "weight")]
+
+mp_model <- mice(df_longitudinal, m = 5, maxit = 10, Seed = 875)
+
+#For each complete imputed dataset, calculate the BMI and the mean BMI
+
+completeset1 <- complete(mp_model, 1)
+completeset1$heightm <- (completeset1$height/100)
+
+completeset1$BMInew <- (completeset1$weight / (completeset1$heightm * completeset1$heightm))
+mean1 <- mean(completeset1$BMInew)
+
+completeset2 <- complete(mp_model, 2)
+completeset2$heightm <- (completeset2$height/100)
+
+completeset2$BMInew <- (completeset2$weight / (completeset2$heightm * completeset2$heightm))
+mean2 <- mean(completeset2$BMInew)
+
+completeset3 <- complete(mp_model, 3)
+completeset3$heightm <- (completeset3$height/100)
+
+completeset3$BMInew <- (completeset3$weight / (completeset3$heightm * completeset3$heightm))
+mean3 <- mean(completeset3$BMInew)
+
+completeset4 <- complete(mp_model, 4)
+completeset4$heightm <- (completeset4$height/100)
+
+completeset4$BMInew <- (completeset4$weight / (completeset4$heightm * completeset4$heightm))
+mean4 <- mean(completeset4$BMInew)
+
+completeset5 <- complete(mp_model, 5)
+completeset5$heightm <- (completeset5$height/100)
+
+completeset5$BMInew <- (completeset5$weight / (completeset5$heightm * completeset5$heightm))
+mean5 <- mean(completeset5$BMInew)
+
+
+# Combine all datasets into one data frame
+combined_data <- rbind(cbind(completeset1, dataset = "Dataset 1"),
+                       cbind(completeset2, dataset = "Dataset 2"),
+                       cbind(completeset3, dataset = "Dataset 3"),
+                       cbind(completeset4, dataset = "Dataset 4"),
+                       cbind(completeset5, dataset = "Dataset 5"))
+
+#Run a post hoc test to see if there are any differences in the means calculated (comparing each imputed dataset with each other)
+
+install.packages("dunn.test")
+library(dunn.test)
+
+# Perform post-hoc test
+posthoc_dunn <- dunn.test(combined_data$BMInew, combined_data$dataset, method = "bonferroni")
+
+# Print the post-hoc test results
+print(posthoc_dunn)#No differences between the BMI values calculated
+
+
+#--------------------------------------------------------------------------
+
+#SEM Model 1 (sleep duration during week predicting disordered eating at age 17)
+
+
+model_long_1 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ sleep_categories_week + Disordered_eating + sex + ethnicity + BMI + income 
+
+sleep_categories_week ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_1_fit <- sem(model_long_1,
+                        data = final_analysis,
+                        estimator = "WLSMV",
+                        se = "robust",
+                        std.lv = TRUE)
+
+summary(model_long_1_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_1_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+#--------------------------------------------------------------------------------------------------------
+
+#SEM Model 2 (sleep duration during weekend predicting disordered eating at age 17)
+
+
+model_long_2 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ sleep_categories_weekend + Disordered_eating +  sex + ethnicity + BMI + income 
+
+sleep_categories_weekend ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_2_fit <- sem(model_long_2,
+                        data = final_analysis,
+                        estimator = "WLSMV",
+                        se = "robust",
+                        std.lv = TRUE)
+
+summary(model_long_2_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_2_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+#--------------------------------------------------------------------------------------------------------
+
+#SEM Model 3 (sleep onset latency predicting disordered eating at age 17)
+
+
+model_long_3 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ sleep_latency + Disordered_eating + sex + ethnicity + BMI + income 
+
+sleep_latency ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_3_fit <- sem(model_long_3,
+                        data = final_analysis,
+                        estimator = "WLSMV",
+                        se = "robust",
+                        std.lv = TRUE)
+
+summary(model_long_3_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_3_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+#--------------------------------------------------------------------------------------------------------
+
+
+#SEM Model 4 (WASO predicting disordered eating at age 17)
+
+
+model_long_4 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~  WASO + Disordered_eating + sex + ethnicity + BMI + income 
+
+WASO ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_4_fit <- sem(model_long_4,
+                        data = final_analysis,
+                        estimator = "WLSMV",
+                        se = "robust",
+                        std.lv = TRUE)
+
+summary(model_long_4_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_4_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+#--------------------------------------------------------------------------------------------------------
+
+#SEM Model 5 (Social Jetlag predicting disordered eating at age 17)
+
+
+model_long_5 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7 
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ social_jetlag + Disordered_eating + sex + ethnicity + BMI + income 
+
+social_jetlag ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_5_fit <- sem(model_long_5,
+                        data = final_analysis,
+                        estimator = "WLSMV",
+                        se = "robust",
+                        std.lv = TRUE)
+
+summary(model_long_5_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_5_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+#--------------------------------------------------------------------------------------------------------
+
+#SEM Model 6 (Wake-Up Time During the Week predicting disordered eating at age 17)
+
+
+model_long_6 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ wake_up_week + Disordered_eating +  sex + ethnicity + BMI + income 
+
+wake_up_week ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_6_fit <- sem(model_long_6,
+                        data = final_analysis,
+                        estimator = "WLSMV",
+                        se = "robust",
+                        std.lv = TRUE)
+
+summary(model_long_6_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_6_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+#--------------------------------------------------------------------------------------------------------
+
+#SEM Model 7 (Wake-Up Time During the Weekend predicting disordered eating at age 17)
+
+
+model_long_7 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ wake_up_weekend + Disordered_eating + sex + ethnicity + BMI + income 
+
+wake_up_weekend ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_7_fit <- sem(model_long_7,
+                        data = final_analysis,
+                        estimator = "WLSMV",
+                        se = "robust",
+                        std.lv = TRUE)
+
+summary(model_long_7_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_7_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+#--------------------------------------------------------------------------------------------------------
+
+#SEM Model 8 (Bedtime During the Week predicting disordered eating at age 17)
+
+
+model_long_8 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ bed_time_week + Disordered_eating + sex + ethnicity + BMI + income 
+
+bed_time_week ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_8_fit <- sem(model_long_8,
+                        data = final_analysis,
+                        estimator = "WLSMV",
+                        se = "robust",
+                        std.lv = TRUE)
+
+summary(model_long_8_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_8_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+#--------------------------------------------------------------------------------------------------------
+
+
+#SEM Model 9 (Bedtime During the Weekend predicting disordered eating at age 17)
+
+
+model_long_9 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ bed_time_weekend + Disordered_eating + sex + ethnicity + BMI + income 
+
+bed_time_weekend ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_9_fit <- sem(model_long_9,
+                        data = final_analysis,
+                        estimator = "WLSMV",
+                        se = "robust",
+                        std.lv = TRUE)
+
+summary(model_long_9_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_9_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+#--------------------------------------------------------------------------
+
+#Benjamini-Hochberg Correction for Multiple Testing
+
+#The Benjamini-Hochberg procedure addresses issues of multiple testing by controlling the FDR (false discovery rate), which is defined as the expected proportion of false positives among the rejected hypotheses
+
+#The BH procedure involves comparing each individual p-value to a critical value or threshold
+
+#Longitudinal full analysis sample
+
+pvalues3<-c(0.30, 0.49, 0.78, 0.28, 0.71, 0.11, 0.06, 0.82, 0.77)
+
+fdrs3<-p.adjust(pvalues3, method="BH")
+
+print(fdrs3)
+
+
+#--------------------------------------------------------------------------
+
+#Time Use Sleep Data (Sub-Sample)
+
+#--------------------------------------------------------------------------
+
+
+#SEM Model 10 (Sleep duration during the week predicting disordered eating at age 17)
+
+
+model_long_10 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ sleep_categories_week_TUD + Disordered_eating + sex + ethnicity + BMI + income 
+
+sleep_categories_week_TUD ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_10_fit <- sem(model_long_10,
+                         data = final_analysis_TUD,
+                         estimator = "WLSMV",
+                         se = "robust",
+                         std.lv = TRUE)
+
+summary(model_long_10_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_10_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+#--------------------------------------------------------------------------
+
+
+#SEM Model 11 (Sleep duration during the weekend predicting disordered eating at age 17)
+
+
+model_long_11 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ sleep_categories_weekend_TUD + Disordered_eating + sex + ethnicity + BMI + income 
+
+sleep_categories_weekend_TUD ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_11_fit <- sem(model_long_11,
+                         data = final_analysis_TUD,
+                         estimator = "WLSMV",
+                         se = "robust",
+                         std.lv = TRUE)
+
+summary(model_long_11_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_11_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+#--------------------------------------------------------------------------
+
+#SEM Model 12 (Daytime Napping during the week predicting disordered eating at age 17)
+
+
+model_long_12 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ daytime_nap_week + Disordered_eating +sex + ethnicity + BMI + income 
+
+daytime_nap_week ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_12_fit <- sem(model_long_12,
+                         data = final_analysis_TUD,
+                         estimator = "WLSMV",
+                         se = "robust",
+                         std.lv = TRUE)
+
+summary(model_long_12_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_12_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+#--------------------------------------------------------------------------
+
+
+#SEM Model 13 (Daytime Napping during the weekend predicting disordered eating at age 17)
+
+
+model_long_13 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ daytime_nap_weekend + Disordered_eating + sex + ethnicity + BMI + income 
+
+daytime_nap_weekend ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_13_fit <- sem(model_long_13,
+                         data = final_analysis_TUD,
+                         estimator = "WLSMV",
+                         se = "robust",
+                         std.lv = TRUE)
+
+summary(model_long_13_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_13_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+#--------------------------------------------------------------------------
+
+
+#SEM Model 14 (Night Awakening during the week predicting disordered eating at age 17)
+
+
+model_long_14 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ night_awakening_week + Disordered_eating + sex + ethnicity + BMI + income 
+
+night_awakening_week ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_14_fit <- sem(model_long_14,
+                         data = final_analysis_TUD,
+                         estimator = "WLSMV",
+                         se = "robust",
+                         std.lv = TRUE)
+
+summary(model_long_14_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_14_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
+#--------------------------------------------------------------------------
+
+
+#SEM Model 15 (Night Awakening during the weekend predicting disordered eating at age 17)
+
+
+model_long_15 <-
+  
+  '
+
+Disordered_eating =~ de1*weight_loss_intention + de2*dietary_restriction + de3*excessive_exercise
+Disordered_eating_7 =~ de1*weight_loss_intention_7 + de2*dietary_restriction_7 + de3*excessive_exercise_7
+
+Disordered_eating ~~ 1*Disordered_eating
+Disordered_eating_7 ~~ 1*Disordered_eating_7
+
+Disordered_eating_7 ~ night_awakening_weekend + Disordered_eating + sex + ethnicity + BMI + income 
+
+night_awakening_weekend ~ Disordered_eating + sex + ethnicity + BMI + income 
+
+Disordered_eating ~~ BMI
+Disordered_eating ~~ sex
+
+weight_loss_intention ~~ de1cov*weight_loss_intention_7
+dietary_restriction ~~ de2cov*dietary_restriction_7
+excessive_exercise ~~ de3cov*excessive_exercise_7
+
+'
+
+model_long_15_fit <- sem(model_long_15,
+                         data = final_analysis_TUD,
+                         estimator = "WLSMV",
+                         se = "robust",
+                         std.lv = TRUE)
+
+summary(model_long_15_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_15_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+#--------------------------------------------------------------------------
+
+
+#Benjamini-Hochberg Correction for Multiple Testing
+
+#The Benjamini-Hochberg procedure addresses issues of multiple testing by controlling the FDR (false discovery rate), which is defined as the expected proportion of false positives among the rejected hypotheses
+
+#The Benjamini-Hochberg procedure involves comparing each individual p-value to a critical value or threshold
+
+#Correcting for multiple testing SEM Regression Analysis 
+
+#Longitudinal full analysis sample
+
+pvalues4<-c(0.36, 0.32, 0.73, 0.88, 0.69, 0.71)
+
+fdrs4<-p.adjust(pvalues4, method="BH")
+
+print(fdrs4)
+
+#------------------------------------------------------------------------------------------
+
+
+#SEM Model 16 (disordered eating at age 14 predicting overall sleep quality at age 17)
+
+
+model_long_16 <-
+  '
+# Disordered Eating factors loadings defined
+
+Disordered_eating =~ NA* dietary_restriction + weight_loss_intention + excessive_exercise 
+
+Disordered_eating ~~ 1*Disordered_eating
+
+overall_sleep_quality_7 ~  Disordered_eating + sex + ethnicity + BMI + income 
+ + sleep_categories_week + sleep_categories_weekend + sleep_latency + WASO + social_jetlag + wake_up_week + wake_up_weekend + bed_time_week + bed_time_weekend
+
+Disordered_eating ~ sex + ethnicity + BMI + income 
+ + sleep_categories_week + sleep_categories_weekend + sleep_latency + WASO + social_jetlag + wake_up_week + wake_up_weekend + bed_time_week + bed_time_weekend
+
+'
+
+model_long_16_fit <- sem(model_long_16,
+                         data = final_analysis,
+                         estimator = "WLSMV",
+                         se = "robust",
+                         std.lv = TRUE)
+
+summary(model_long_16_fit, fit.measures = TRUE,
+        standardized = TRUE,
+        ci = TRUE,
+        rsquare = TRUE)
+modindices(model_long_16_fit, sort=TRUE, maximum.number=5, alpha=0.05) 
+
+
